@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>موسوعة الأحاديث النبوية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a5f2a;
+            --primary-light: #2e7d32;
+            --gold: #d4a74c;
+            --bg-light: #f8faf8;
+            --card-bg: #ffffff;
+            --text-dark: #1a1a1a;
+            --text-muted: #666;
+            
+            /* درجات الصحة */
+            --sahih: #2e7d32;
+            --hasan: #f9a825;
+            --daif: #c62828;
+            --mawdu: #616161;
+        }
+
+        [data-theme="dark"] {
+            --bg-light: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-dark: #f0f0f0;
+            --text-muted: #aaa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1rem;
+        }
+
+        /* Search Section */
+        .search-section {
+            max-width: 1000px;
+            margin: -25px auto 30px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .search-box {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 18px 25px 18px 60px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            background: var(--bg-light);
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 0 5px rgba(212, 167, 76, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold);
+            font-size: 1.3rem;
+        }
+
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        select {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: var(--card-bg);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select:focus {
+            border-color: var(--gold);
+            outline: none;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            max-width: 1000px;
+            margin: 0 auto 20px;
+            padding: 0 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-chip {
+            background: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            font-size: 0.9rem;
+        }
+
+        .stat-chip i {
+            color: var(--gold);
+        }
+
+        /* Hadith Container */
+        .hadith-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px 50px;
+        }
+
+        /* Hadith Card */
+        .hadith-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border-right: 6px solid var(--gold);
+        }
+
+        .hadith-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .hadith-card.sahih { border-right-color: var(--sahih); }
+        .hadith-card.hasan { border-right-color: var(--hasan); }
+        .hadith-card.daif { border-right-color: var(--daif); }
+        .hadith-card.mawdu { border-right-color: var(--mawdu); }
+
+        .hadith-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.05) 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .hadith-number {
+            background: var(--primary);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .hadith-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badge.sahih { background: rgba(46, 125, 50, 0.1); color: var(--sahih); }
+        .badge.hasan { background: rgba(249, 168, 37, 0.1); color: var(--hasan); }
+        .badge.daif { background: rgba(198, 40, 40, 0.1); color: var(--daif); }
+        .badge.mawdu { background: rgba(97, 97, 97, 0.1); color: var(--mawdu); }
+
+        .hadith-content {
+            padding: 30px;
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            line-height: 2;
+            text-align: justify;
+            position: relative;
+        }
+
+        .hadith-content::before {
+            content: '﴿';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3rem;
+            color: var(--gold);
+            opacity: 0.2;
+        }
+
+        .hadith-content::after {
+            content: '﴾';
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 3rem;
+            color: var(--gold);
+            opacity: 0.2;
+        }
+
+        .hadith-narrator {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed #ddd;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hadith-footer {
+            padding: 20px 30px;
+            background: rgba(0,0,0,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .hadith-source {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .source-book {
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .source-chapter {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .hadith-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: none;
+            border: 2px solid #e0e0e0;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            color: var(--text-muted);
+        }
+
+        .action-btn:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .action-btn.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: white;
+        }
+
+        /* Explanation Section */
+        .explanation {
+            padding: 0 30px 30px;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .explanation-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .explanation-text {
+            background: rgba(212, 167, 76, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .toggle-exp {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .toggle-exp:hover {
+            background: var(--gold);
+        }
+
+        /* Loading & Empty States */
+        .loading, .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading i, .empty-state i {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .page-btn {
+            background: var(--card-bg);
+            border: 2px solid #e0e0e0;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .hadith-content { font-size: 1.2rem; padding: 20px; }
+            .filters { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>
+            <i class="fas fa-book-open"></i>
+            موسوعة الأحاديث النبوية
+        </h1>
+        <p>بحث متقدم في الصحيح والحسن والضعيف</p>
+    </header>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="search-box">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="searchInput" 
+                    placeholder="ابحث في الحديث أو الراوي أو الكتاب..."
+                    oninput="searchHadiths()"
+                >
+            </div>
+            
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">درجة الصحة</label>
+                    <select id="authenticityFilter" onchange="searchHadiths()">
+                        <option value="all">الكل</option>
+                        <option value="حسن">حسن</option>
+                        <option value="ضعيف">ضعيف</option>
+                        <option value="موضوع">موضوع</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">الكتاب</label>
+                    <select id="bookFilter" onchange="searchHadiths()">
+                        <option value="all">جميع الكتب</option>
+                        <option value="صحيح البخاري">صحيح البخاري</option>
+                        <option value="صحيح مسلم">صحيح مسلم</option>
+                        <option value="سنن الترمذي">سنن الترمذي</option>
+                        <option value="سنن أبي داود">سنن أبي داود</option>
+                        <option value="سنن النسائي">سنن النسائي</option>
+                        <option value="سنن ابن ماجه">سنن ابن ماجه</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">ترتيب حسب</label>
+                    <select id="sortFilter" onchange="searchHadiths()">
+                        <option value="authenticity">درجة الصحة (الأقوى أولاً)</option>
+                        <option value="newest">الأحدث</option>
+                        <option value="book">الكتاب</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar" id="statsBar">
+        <div class="stat-chip">
+            <i class="fas fa-database"></i>
+            <span id="totalCount">جاري التحميل...</span>
+        </div>
+    </div>
+
+    <!-- Hadiths Container -->
+    <div class="hadith-container" id="hadithContainer">
+        <div class="loading">
+            <i class="fas fa-circle-notch"></i>
+            <p>جاري تحميل الأحاديث...</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pagination"></div>
+
+    <script>
+        // Data Store
+        let allHadiths = [];
+        let filteredHadiths = [];
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 10;
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHadiths();
+        });
+
+        // Load Hadiths (API or Local)
+        async function loadHadiths() {
+            try {
+                // Try to fetch from API first
+                const response = await fetch('https://api.hadith.gading.dev/books');
+                if (!response.ok) throw new Error('API failed');
+                
+                const books = await response.json();
+                // Fetch hadiths from multiple books
+                const promises = books.data.slice(0, 3).map(book => 
+                    fetch(`https://api.hadith.gading.dev/books/${book.id}?range=1-50`).then(r => r.json())
+                );
+                
+                const results = await Promise.all(promises);
+                allHadiths = results.flatMap(result => 
+                    result.data.hadiths.map(h => ({
+                        id: h.number,
+                        text: h.arab,
+                        narrator: h.narrator || 'غير مذكور',
+                        source: result.data.name,
+                        book: result.data.name,
+                        chapter: result.data.contents?.[0]?.chapter || 'باب',
+                        authenticity: result.data.name.includes('بخاري') || result.data.name.includes('مسلم') ? 'صحيح' : 'حسن',
+                        grade: result.data.name.includes('بخاري') || result.data.name.includes('مسلم') ? 5 : 3,
+                        explanation: '',
+                        tags: []
+                    }))
+                );
+                
+            } catch (error) {
+                console.log('Using local data...');
+                useLocalData();
+            }
+            
+            filteredHadiths = [...allHadiths];
+            updateStats();
+            renderHadiths();
+        }
+
+        // Local Backup Data
+        function useLocalData() {
+            allHadiths = [
+                {
+                    id: 1,
+                    text: "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلَى اللَّهِ وَرَسُولِهِ فَهِجْرَتُهُ إِلَى اللَّهِ وَرَسُولِهِ، وَمَنْ كَانَتْ هِجْرَتُهُ لِدُنْيَا يُصِيبُهَا أَوْ امْرَأَةٍ يَتَزَوَّجُهَا فَهِجْرَتُهُ إِلَى مَا هَاجَرَ إِلَيْهِ",
+                    narrator: "عمر بن الخطاب رضي الله عنه",
+                    source: "صحيح البخاري",
+                    book: "صحيح البخاري",
+                    chapter: "كتاب بدء الوحي",
+                    authenticity: "صحيح",
+                    grade: 5,
+                    explanation: "النية هي القصد والإرادة، وهي أساس العمل. من نوى الخير فله الخير، ومن نوى الشر فله الشر.",
+                    tags: ["نية", "إخلاص", "عمل"]
+                },
+                {
+                    id: 2,
+                    text: "بُنِيَ الإِسْلاَمُ عَلَى خَمْسٍ: شَهَادَةِ أَنْ لاَ إِلَهَ إِلاَّ اللَّهُ وَأَنَّ مُحَمَّدًا رَسُولُ اللَّهِ، وَإِقَامِ الصَّلاَةِ، وَإِيتَاءِ الزَّكَاةِ، وَالْحَجِّ، وَصَوْمِ رَمَضَانَ",
+                    narrator: "ابن عمر رضي الله عنهما",
+                    source: "صحيح البخاري",
+                    book: "صحيح البخاري",
+                    chapter: "كتاب الإيمان",
+                    authenticity: "صحيح",
+                    grade: 5,
+                    explanation: "هذه أركان الإسلام الخمسة التي يقوم عليها الدين.",
+                    tags: ["أركان الإسلام", "الإيمان", "العبادات"]
+                },
+                {
+                    id: 3,
+                    text: "مَنْ عَمِلَ صَالِحًا مِنْ ذَكَرٍ أَوْ أُنْثَى وَهُوَ مُؤْمِنٌ فَلَنُحْيِيَنَّهُ حَيَاةً طَيِّبَةً وَلَنَجْزِيَنَّهُمْ أَجْرَهُمْ بِأَحْسَنِ مَا كَانُوا يَعْمَلُونَ",
+                    narrator: "ابن عباس رضي الله عنهما",
+                    source: "سنن الترمذي",
+                    book: "سنن الترمذي",
+                    chapter: "تفسير القرآن",
+                    authenticity: "حسن",
+                    grade: 3,
+                    explanation: "الحياة الطيبة هي حياة القلب بالطمأنينة والسعادة.",
+                    tags: ["عمل صالح", "حياة طيبة", "الإيمان"]
+                },
+                {
+                    id: 4,
+                    text: "الدِّينُ النَّصِيحَةُ. قُلْنَا: لِمَنْ؟ قَالَ: لِلَّهِ، وَلِكِتَابِهِ، وَلِرَسُولِهِ، وَلِأَئِمَّةِ الْمُسْلِمِينَ وَعَامَّتِهِمْ",
+                    narrator: "تميم الداري رضي الله عنه",
+                    source: "صحيح مسلم",
+                    book: "صحيح مسلم",
+                    chapter: "كتاب الإيمان",
+                    authenticity: "صحيح",
+                    grade: 5,
+                    explanation: "النصيحة هي إرادة الخير للغير، وهي تجمع كل خلق فاضل.",
+                    tags: ["نصيحة", "الدين", "الخلق"]
+                },
+                {
+                    id: 5,
+                    text: "لا يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+                    narrator: "أنس بن مالك رضي الله عنه",
+                    source: "صحيح البخاري",
+                    book: "صحيح البخاري",
+                    chapter: "كتاب الإيمان",
+                    authenticity: "صحيح",
+                    grade: 5,
+                    explanation: "هذا أحد أركان الإيمان: حب الخير للغير كحبه لنفسه.",
+                    tags: ["الإيمان", "المحبة", "الإخوة"]
+                }
+            ];
+        }
+
+        // Search & Filter
+        function searchHadiths() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const authenticity = document.getElementById('authenticityFilter').value;
+            const book = document.getElementById('bookFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            filteredHadiths = allHadiths.filter(h => {
+                const matchesSearch = !searchTerm || 
+                    h.text.toLowerCase().includes(searchTerm) ||
+                    h.narrator.toLowerCase().includes(searchTerm) ||
+                    h.book.toLowerCase().includes(searchTerm);
+                
+                const matchesAuth = authenticity === 'all' || h.authenticity === authenticity;
+                const matchesBook = book === 'all' || h.book === book;
+                
+                return matchesSearch && matchesAuth && matchesBook;
+            });
+
+            // Sort
+            filteredHadiths.sort((a, b) => {
+                if (sort === 'authenticity') return b.grade - a.grade;
+                if (sort === 'book') return a.book.localeCompare(b.book);
+                return a.id - b.id;
+            });
+
+            currentPage = 1;
+            updateStats();
+            renderHadiths();
+        }
+
+        // Update Stats
+        function updateStats() {
+            const count = filteredHadiths.length;
+            document.getElementById('totalCount').textContent = `${count} حديث`;
+            
+            // Add grade distribution
+            const grades = {};
+            filteredHadiths.forEach(h => {
+                grades[h.authenticity] = (grades[h.authenticity] || 0) + 1;
+            });
+        }
+
+        // Render Hadiths
+        function renderHadiths() {
+            const container = document.getElementById('hadithContainer');
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const pageHadiths = filteredHadiths.slice(start, end);
+
+            if (pageHadiths.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>لا توجد نتائج</h3>
+                        <p>جرب تغيير معايير البحث</p>
+                    </div>
+                `;
+                renderPagination();
+                return;
+            }
+
+            container.innerHTML = pageHadiths.map(h => `
+                <div class="hadith-card ${getAuthenticityClass(h.authenticity)}" id="hadith-${h.id}">
+                    <div class="hadith-header">
+                        <div class="hadith-number">${h.id}</div>
+                        <div class="hadith-badges">
+                            <span class="badge ${getAuthenticityClass(h.authenticity)}">
+                                <i class="fas fa-check-circle"></i>
+                                ${h.authenticity}
+                            </span>
+                            ${h.grade === 5 ? '<span class="badge sahih"><i class="fas fa-star"></i> متفق عليه</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="hadith-content">
+                        ${h.text}
+                        <div class="hadith-narrator">
+                            <i class="fas fa-user-circle"></i>
+                            رواه ${h.narrator}
+                        </div>
+                    </div>
+                    
+                    <div class="hadith-footer">
+                        <div class="hadith-source">
+                            <span class="source-book">
+                                <i class="fas fa-book"></i>
+                                ${h.book}
+                            </span>
+                            <span class="source-chapter">${h.chapter}</span>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button class="toggle-exp" onclick="toggleExplanation(${h.id})">
+                                <i class="fas fa-lightbulb"></i>
+                                الشرح
+                            </button>
+                            
+                            <div class="hadith-actions">
+                                <button class="action-btn ${favorites.includes(h.id) ? 'active' : ''}" 
+                                        onclick="toggleFavorite(${h.id})" title="المفضلة">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="action-btn" onclick="copyHadith(${h.id})" title="نسخ">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                                <button class="action-btn" onclick="shareHadith(${h.id})" title="مشاركة">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="explanation" id="exp-${h.id}">
+                        <div class="explanation-title">
+                            <i class="fas fa-book-open"></i>
+                            شرح الحديث
+                        </div>
+                        <div class="explanation-text">
+                            ${h.explanation || 'لا يوجد شرح متوفر لهذا الحديث.'}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            renderPagination();
+        }
+
+        // Get CSS Class for Authenticity
+        function getAuthenticityClass(auth) {
+            const map = {
+                'صحيح': 'sahih',
+                'حسن': 'hasan',
+                'ضعيف': 'daif',
+                'موضوع': 'mawdu'
+            };
+            return map[auth] || 'sahih';
+        }
+
+        // Toggle Explanation
+        function toggleExplanation(id) {
+            const exp = document.getElementById(`exp-${id}`);
+            exp.classList.toggle('show');
+        }
+
+        // Toggle Favorite
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(id);
+            }
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderHadiths();
+        }
+
+        // Copy Hadith
+        function copyHadith(id) {
+            const hadith = allHadiths.find(h => h.id === id);
+            const text = `${hadith.text}\n\nرواه ${hadith.narrator} في ${hadith.book}`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('تم نسخ الحديث!');
+            });
+        }
+
+        // Share Hadith
+        function shareHadith(id) {
+            const hadith = allHadiths.find(h => h.id === id);
+            const text = `${hadith.text}\n\nرواه ${hadith.narrator}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'حديث نبوي شريف',
+                    text: text
+                });
+            } else {
+                copyHadith(id);
+            }
+        }
+
+        // Pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredHadiths.length / ITEMS_PER_PAGE);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let html = `
+                <button class="page-btn" onclick="changePage(${currentPage - 1})" 
+                        ${currentPage === 1 ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    html += `
+                        <button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                                onclick="changePage(${i})">${i}</button>
+                    `;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    html += `<span style="padding: 10px;">...</span>`;
+                }
+            }
+
+            html += `
+                <button class="page-btn" onclick="changePage(${currentPage + 1})" 
+                        ${currentPage === totalPages ? 'disabled' : ''}>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+
+            pagination.innerHTML = html;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderHadiths();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+    
+</body>
+</html>
+
