@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأدعية - الموسوعة الإسلامية</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#2d5a3d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2d5a3d;
+            --primary-light: #3d7a52;
+            --primary-dark: #1e3d2f;
+            --secondary: #d4af37;
+            --secondary-light: #e5c158;
+            --background: #faf8f3;
+            --surface: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border: #e0e0e0;
+            --shadow: rgba(0,0,0,0.08);
+            --shadow-hover: rgba(0,0,0,0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.dark-mode {
+            --primary: #4a7c59;
+            --primary-light: #5a9c6e;
+            --primary-dark: #3a5c49;
+            --secondary: #e5c158;
+            --background: #121212;
+            --surface: #1e1e1e;
+            --text-primary: #f5f5f5;
+            --text-secondary: #aaaaaa;
+            --border: #333;
+            --shadow: rgba(0,0,0,0.3);
+            --shadow-hover: rgba(0,0,0,0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateX(-5px);
+        }
+
+        .logo {
+            font-family: 'Amiri', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: var(--transition);
+        }
+
+        .btn-icon:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Page Title */
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-family: 'Amiri', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Search & Filter */
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 50px 15px 20px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            background: var(--surface);
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(45,90,61,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            opacity: 0.5;
+        }
+
+        .categories {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .category-btn {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 2px solid var(--border);
+            background: var(--surface);
+            color: var(--text-primary);
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Duas Grid */
+        .duas-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .dua-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px var(--shadow);
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dua-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .dua-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .dua-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px var(--shadow-hover);
+            border-color: var(--primary);
+        }
+
+        .dua-category {
+            display: inline-block;
+            background: rgba(45,90,61,0.1);
+            color: var(--primary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .dua-text {
+            font-family: 'Amiri', serif;
+            font-size: clamp(1.3rem, 3vw, 1.6rem);
+            line-height: 2;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .dua-reference {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dua-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: var(--transition);
+        }
+
+        .btn-copy {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        .btn-copy.copied {
+            background: #27ae60;
+        }
+
+        .btn-share {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+        }
+
+        .btn-share:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-favorite {
+            background: var(--surface);
+            color: var(--text-primary);
+            border: 2px solid var(--border);
+            min-width: 50px;
+        }
+
+        .btn-favorite:hover,
+        .btn-favorite.active {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        /* Counter */
+        .counter-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .counter-display {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 10px 0;
+            font-family: 'Amiri', serif;
+        }
+
+        .counter-btn {
+            background: var(--secondary);
+            color: var(--primary-dark);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 10px;
+        }
+
+        .counter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .counter-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Favorites Section */
+        .favorites-section {
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .favorites-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 10000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .duas-container {
+                grid-template-columns: 1fr;
+            }
+
+            .dua-card {
+                padding: 20px;
+            }
+
+            .categories {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                padding-bottom: 10px;
+            }
+
+            .category-btn {
+                white-space: nowrap;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--background);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+
+        /* Selection */
+        ::selection {
+            background: var(--secondary);
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-btn">
+                ⬅ العودة للرئيسية
+            </a>
+            
+            <div class="logo">
+                <div class="logo-icon">🤲</div>
+                <span>الأدعية </span>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-icon" onclick="toggleTheme()" title="تغيير الوضع">🌓</button>
+                <button class="btn-icon" onclick="showFavorites()" title="المفضلة">❤️</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">أدعية من القرآن والسنة</h1>
+            <p class="page-subtitle">اجمع من الأدعية ما تؤنس بها وحشتك وتقرب بها إلى الله</p>
+        </div>
+
+        <!-- Favorites Section -->
+        <div class="favorites-section" id="favoritesSection">
+            <div class="section-header">
+                <h2 class="section-title">❤️ أدعيتك المفضلة</h2>
+                <button class="category-btn" onclick="hideFavorites()">عرض الكل</button>
+            </div>
+            <div id="favoritesList"></div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="controls-section" id="controlsSection">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="ابحث في الأدعية..." oninput="searchDuas()">
+            </div>
+            
+            <div class="categories">
+                <button class="category-btn active" onclick="filterCategory('all')">الكل</button>
+                <button class="category-btn" onclick="filterCategory('morning')">أذكار الصباح</button>
+                <button class="category-btn" onclick="filterCategory('evening')">أذكار المساء</button>
+                <button class="category-btn" onclick="filterCategory('sleep')">قبل النوم</button>
+                <button class="category-btn" onclick="filterCategory('prayer')">الصلاة</button>
+                <button class="category-btn" onclick="filterCategory('travel')">السفر</button>
+                <button class="category-btn" onclick="filterCategory('sick')">المرض</button>
+                <button class="category-btn" onclick="filterCategory('general')">منوعة</button>
+            </div>
+        </div>
+
+        <!-- Duas Container -->
+        <div class="duas-container" id="duasContainer"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">🤲</div>
+            <h3>لا توجد أدعية في هذا القسم</h3>
+        </div>
+
+    </main>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Duas Data
+        const duas = [
+            {
+                id: 1,
+                category: 'morning',
+                categoryName: 'أذكار الصباح',
+                text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+                reference: 'مسلم',
+                count: 1
+            },
+            {
+                id: 2,
+                category: 'morning',
+                categoryName: 'أذكار الصباح',
+                text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ',
+                reference: 'الترمذي',
+                count: 1
+            },
+            {
+                id: 3,
+                category: 'evening',
+                categoryName: 'أذكار المساء',
+                text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ',
+                reference: 'مسلم',
+                count: 1
+            },
+            {
+                id: 4,
+                category: 'evening',
+                categoryName: 'أذكار المساء',
+                text: 'اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ',
+                reference: 'أبو داود',
+                count: 1
+            },
+            {
+                id: 5,
+                category: 'sleep',
+                categoryName: 'قبل النوم',
+                text: 'اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا',
+                reference: 'البخاري',
+                count: 1
+            },
+            {
+                id: 6,
+                category: 'sleep',
+                categoryName: 'قبل النوم',
+                text: 'سُبْحَانَ اللَّهِ',
+                reference: 'البخاري',
+                count: 33
+            },
+            {
+                id: 7,
+                category: 'sleep',
+                categoryName: 'قبل النوم',
+                text: 'الْحَمْدُ لِلَّهِ',
+                reference: 'البخاري',
+                count: 33
+            },
+            {
+                id: 8,
+                category: 'sleep',
+                categoryName: 'قبل النوم',
+                text: 'اللَّهُ أَكْبَرُ',
+                reference: 'البخاري',
+                count: 34
+            },
+            {
+                id: 9,
+                category: 'prayer',
+                categoryName: 'الصلاة',
+                text: 'اللَّهُمَّ رَبَّنَا لَكَ الْحَمْدُ مِلْءَ السَّمَاوَاتِ وَمِلْءَ الْأَرْضِ وَمِلْءَ مَا شِئْتَ مِنْ شَيْءٍ بَعْدُ',
+                reference: 'مسلم',
+                count: 1
+            },
+            {
+                id: 10,
+                category: 'prayer',
+                categoryName: 'الصلاة',
+                text: 'اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ',
+                reference: 'أبو داود',
+                count: 1
+            },
+            {
+                id: 11,
+                category: 'travel',
+                categoryName: 'السفر',
+                text: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا وَمَا كُنَّا لَهُ مُقْرِنِينَ وَإِنَّا إِلَى رَبِّنَا لَمُنْقَلِبُونَ',
+                reference: 'الزخرف: 13-14',
+                count: 1
+            },
+            {
+                id: 12,
+                category: 'sick',
+                categoryName: 'المرض',
+                text: 'اللَّهُمَّ رَبَّ النَّاسِ أَذْهِبِ الْبَأْسَ اشْفِ أَنْتَ الشَّافِي لَا شِفَاءَ إِلَّا شِفَاؤُكَ شِفَاءً لَا يُغَادِرُ سَقَمًا',
+                reference: 'البخاري',
+                count: 1
+            },
+            {
+                id: 13,
+                category: 'general',
+                categoryName: 'أدعية منوعة',
+                text: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+                reference: 'البقرة: 201',
+                count: 1
+            },
+            {
+                id: 14,
+                category: 'general',
+                categoryName: 'أدعية منوعة',
+                text: 'لَا إِلَهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ',
+                reference: 'الأنبياء: 87',
+                count: 1
+            },
+            {
+                id: 15,
+                category: 'general',
+                categoryName: 'أدعية منوعة',
+                text: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا وَرِزْقًا طَيِّبًا وَعَمَلًا مُتَقَبَّلًا',
+                reference: 'ابن ماجه',
+                count: 1
+            }
+        ];
+
+        // Variables
+        let currentCategory = 'all';
+        let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+        let currentCounter = 0;
+        let counterInterval = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDuas();
+            loadTheme();
+        });
+
+        // Render Duas
+        function renderDuas(filteredDuas = null) {
+            const container = document.getElementById('duasContainer');
+            const emptyState = document.getElementById('emptyState');
+            const duasToRender = filteredDuas || getFilteredDuas();
+
+            if (duasToRender.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            container.innerHTML = duasToRender.map(dua => `
+                <div class="dua-card" data-id="${dua.id}">
+                    <span class="dua-category">${dua.categoryName}</span>
+                    <p class="dua-text">${dua.text}</p>
+                    <div class="dua-reference">
+                        📖 ${dua.reference}
+                        ${dua.count > 1 ? `| التكرار: ${dua.count} مرة` : ''}
+                    </div>
+                    <div class="dua-actions">
+                        <button class="btn-action btn-copy" onclick="copyDua(${dua.id})">
+                            📋 نسخ
+                        </button>
+                        <button class="btn-action btn-share" onclick="shareDua(${dua.id})">
+                            📤 مشاركة
+                        </button>
+                        <button class="btn-action btn-favorite ${favorites.includes(dua.id) ? 'active' : ''}" onclick="toggleFavorite(${dua.id})">
+                            ${favorites.includes(dua.id) ? '❤️' : '🤍'}
+                        </button>
+                    </div>
+                    ${dua.count > 1 ? `
+                        <div class="counter-section">
+                            <div>عدد المرات: <span class="counter-display" id="counter-${dua.id}">0</span> / ${dua.count}</div>
+                            <button class="counter-btn" onclick="incrementCounter(${dua.id}, ${dua.count})">
+                                اضغط للعد (${dua.count})
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function getFilteredDuas() {
+            if (currentCategory === 'all') return duas;
+            if (currentCategory === 'favorites') {
+                return duas.filter(d => favorites.includes(d.id));
+            }
+            return duas.filter(d => d.category === currentCategory);
+        }
+
+        // Filter Category
+        function filterCategory(category) {
+            currentCategory = category;
+            
+            // Update buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderDuas();
+        }
+
+        // Search
+        function searchDuas() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = duas.filter(d => 
+                d.text.includes(query) || 
+                d.categoryName.includes(query) ||
+                d.reference.includes(query)
+            );
+            renderDuas(filtered);
+        }
+
+        // Copy Dua
+        function copyDua(id) {
+            const dua = duas.find(d => d.id === id);
+            navigator.clipboard.writeText(`${dua.text}\n\n[${dua.reference}]`).then(() => {
+                showToast('✅ تم نسخ الدعاء');
+                
+                // Update button
+                const btn = event.target;
+                btn.classList.add('copied');
+                btn.textContent = '✓ تم النسخ';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.textContent = '📋 نسخ';
+                }, 2000);
+            });
+        }
+
+        // Share Dua
+        function shareDua(id) {
+            const dua = duas.find(d => d.id === id);
+            const text = `${dua.text}\n\n[${dua.reference}]`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'دعاء من الموسوعة الإسلامية',
+                    text: text
+                });
+            } else {
+                // Fallback to WhatsApp
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+                window.open(whatsappUrl, '_blank');
+            }
+        }
+
+        // Toggle Favorite
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index > -1) {
+                favorites.splice(index, 1);
+                showToast('💔 تم الإزالة من المفضلة');
+            } else {
+                favorites.push(id);
+                showToast('❤️ تم الإضافة للمفضلة');
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            renderDuas();
+        }
+
+        // Show/Hide Favorites
+        function showFavorites() {
+            document.getElementById('favoritesSection').classList.add('show');
+            document.getElementById('controlsSection').style.display = 'none';
+            document.getElementById('duasContainer').style.display = 'none';
+            
+            const favDuas = duas.filter(d => favorites.includes(d.id));
+            const container = document.getElementById('favoritesList');
+            
+            if (favDuas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❤️</div>
+                        <h3>لا توجد أدعية مفضلة</h3>
+                        <p>اضغط على 🤍 لإضافة الدعاء للمفضلة</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = favDuas.map(dua => `
+                    <div class="dua-card" style="margin-bottom: 20px;">
+                        <span class="dua-category">${dua.categoryName}</span>
+                        <p class="dua-text">${dua.text}</p>
+                        <div class="dua-actions">
+                            <button class="btn-action btn-copy" onclick="copyDua(${dua.id})">📋 نسخ</button>
+                            <button class="btn-action btn-favorite active" onclick="toggleFavorite(${dua.id})">❤️</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function hideFavorites() {
+            document.getElementById('favoritesSection').classList.remove('show');
+            document.getElementById('controlsSection').style.display = 'flex';
+            document.getElementById('duasContainer').style.display = 'grid';
+            renderDuas();
+        }
+
+        // Counter
+        function incrementCounter(id, max) {
+            const counterEl = document.getElementById(`counter-${id}`);
+            let current = parseInt(counterEl.textContent);
+            
+            if (current < max) {
+                current++;
+                counterEl.textContent = current;
+                
+                // Vibrate on mobile
+                if (navigator.vibrate) navigator.vibrate(20);
+                
+                if (current === max) {
+                    showToast('🎉 أكملت العدد المطلوب!');
+                    counterEl.style.color = '#27ae60';
+                }
+            }
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('duaTheme', isDark ? 'dark' : 'light');
+        }
+
+        function loadTheme() {
+            if (localStorage.getItem('duaTheme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+
+        // Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

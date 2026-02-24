@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>مسبحة | Tasbih</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2330;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #7a6030;
+    --text: #e8dcc8;
+    --text-muted: #8a7a60;
+    --green: #3d6b4f;
+    --green-light: #5c9e74;
+    --radius: 20px;
+    --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .light-mode {
+    --bg: #f5efe6;
+    --surface: #fffdf7;
+    --surface2: #ede8de;
+    --gold: #8a6a1e;
+    --gold-light: #a07820;
+    --gold-dim: #c9b07a;
+    --text: #2a1f0a;
+    --text-muted: #7a6540;
+    --green: #2e5239;
+    --green-light: #3d6b4f;
+  }
+
+  body {
+    font-family: 'Tajawal', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition), color var(--transition);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* background stars/dots */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--gold-dim) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.15;
+    pointer-events: none;
+    transition: opacity var(--transition);
+  }
+  .light-mode body::before { opacity: 0.08; }
+
+  /* floating orb glow */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    transition: background var(--transition);
+    z-index: 0;
+  }
+  .orb1 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12), transparent 70%);
+    top: -100px; right: -100px;
+  }
+  .orb2 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(61,107,79,0.15), transparent 70%);
+    bottom: -80px; left: -80px;
+  }
+
+  .page {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transform: translateY(30px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    z-index: 1;
+  }
+  .page.active {
+    opacity: 1; pointer-events: all;
+    transform: translateY(0);
+  }
+
+  /* ─── HOME PAGE ─── */
+  .home-title {
+    font-family: 'Amiri', serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.4);
+  }
+  .home-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 50px;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+
+  .dhikr-list {
+    display: flex; flex-direction: column;
+    gap: 14px; width: 100%; max-width: 400px;
+  }
+
+  .dhikr-card {
+    background: var(--surface);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: var(--radius);
+    padding: 18px 24px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.25s ease;
+    position: relative; overflow: hidden;
+  }
+  .dhikr-card::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(201,168,76,0.08), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .dhikr-card:hover::before, .dhikr-card:active::before { opacity: 1; }
+  .dhikr-card:hover {
+    border-color: rgba(201,168,76,0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+
+  .dhikr-info { text-align: right; }
+  .dhikr-name {
+    font-family: 'Amiri', serif;
+    font-size: 1.25rem;
+    color: var(--text);
+    display: block;
+    margin-bottom: 2px;
+  }
+  .dhikr-target {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .dhikr-icon {
+    font-size: 1.5rem;
+    opacity: 0.7;
+  }
+
+  /* ─── COUNTER PAGE ─── */
+  .counter-page { gap: 0; }
+
+  .top-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px;
+    z-index: 10;
+  }
+
+  .btn-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.25);
+    background: var(--surface);
+    color: var(--gold);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+  }
+  .btn-icon:hover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    transform: scale(1.08);
+  }
+
+  .dhikr-label {
+    font-family: 'Amiri', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    text-align: center;
+  }
+
+  /* circular progress */
+  .circle-wrap {
+    position: relative;
+    width: min(280px, 72vw);
+    height: min(280px, 72vw);
+    margin: 30px 0 20px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .circle-svg {
+    width: 100%; height: 100%;
+    transform: rotate(-90deg);
+  }
+  .circle-track {
+    fill: none;
+    stroke: var(--surface2);
+    stroke-width: 10;
+  }
+  .circle-progress {
+    fill: none;
+    stroke: url(#goldGrad);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .circle-inner {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .count-display {
+    font-family: 'Amiri', serif;
+    font-size: clamp(3.5rem, 15vw, 5rem);
+    color: var(--text);
+    line-height: 1;
+    transition: transform 0.15s ease;
+  }
+  .count-display.bump { transform: scale(1.12); }
+  .count-target-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ripple effect */
+  .circle-wrap::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.3), transparent 70%);
+    opacity: 0;
+    transform: scale(0.8);
+    transition: none;
+    pointer-events: none;
+  }
+  .circle-wrap.ripple::after {
+    animation: ripple 0.5s ease-out forwards;
+  }
+  @keyframes ripple {
+    0% { opacity: 0.6; transform: scale(0.8); }
+    100% { opacity: 0; transform: scale(1.3); }
+  }
+
+  .counter-dhikr-text {
+    font-family: 'Amiri', serif;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    color: var(--gold-light);
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+
+  .progress-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+  }
+
+  .btn-reset {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 30px;
+    color: var(--text-muted);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 0.9rem;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-reset:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201,168,76,0.08);
+  }
+
+  /* completion overlay */
+  .complete-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+    backdrop-filter: blur(6px);
+    text-align: center; padding: 30px;
+  }
+  .complete-overlay.show { opacity: 1; pointer-events: all; }
+  .complete-emoji { font-size: 4rem; margin-bottom: 16px; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+  .complete-text {
+    font-family: 'Amiri', serif;
+    font-size: 2rem; color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .complete-sub { color: var(--text-muted); font-size: 1rem; margin-bottom: 30px; }
+  .btn-continue {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border: none; border-radius: 30px;
+    color: #0d1117; font-family: 'Tajawal', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    padding: 14px 40px; cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+  }
+  .btn-continue:hover { transform: scale(1.05); box-shadow: 0 6px 30px rgba(201,168,76,0.5); }
+
+  /* vibration hint */
+  .hint {
+    font-size: 0.75rem; color: var(--text-muted);
+    margin-top: 12px; letter-spacing: 0.5px;
+  }
+
+  /* ─── GLOBAL NAV BAR ─── */
+  .global-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 20px;
+    z-index: 50;
+    pointer-events: none;
+  }
+  .global-bar .btn-icon { pointer-events: all; }
+  .global-bar .btn-back {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: all;
+    width: auto;
+    padding: 0 16px;
+    border-radius: 22px;
+    font-size: 0.85rem;
+    font-family: 'Tajawal', sans-serif;
+    text-decoration: none;
+  }
+  .global-bar .btn-back.visible {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: all;
+  }
+  /* hide the old counter top-bar since we use global now */
+  .top-bar { display: none !important; }
+  /* push home content down a bit so it doesn't hide behind bar */
+  .home-page { padding-top: 70px; }
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<!-- ═══ GLOBAL NAV BAR (always visible) ═══ -->
+<div class="global-bar">
+  <a href="index.html" class="btn-icon btn-back visible" title="العودة للرئيسية">🏠 رئيسية</a>
+  <button class="btn-icon" id="darkModeBtn" title="تغيير المود" onclick="toggleDark()">☀️</button>
+</div>
+
+<!-- ═══ HOME PAGE ═══ -->
+<div class="page home-page active" id="homePage">
+  <h1 class="home-title">المسبحة الرقمية</h1>
+  <p class="home-subtitle">اختر ذكرك وابدأ التسبيح</p>
+
+  <div class="dhikr-list">
+    <div class="dhikr-card" onclick="startTasbih('سُبْحَانَ اللَّهِ', 'سبحان الله', 33)">
+      <span class="dhikr-icon">✨</span>
+      <div class="dhikr-info">
+        <span class="dhikr-name">سُبْحَانَ اللَّهِ</span>
+        <span class="dhikr-target">٣٣ مرة</span>
+      </div>
+    </div>
+    <div class="dhikr-card" onclick="startTasbih('الْحَمْدُ لِلَّهِ', 'الحمد لله', 33)">
+      <span class="dhikr-icon">🌿</span>
+      <div class="dhikr-info">
+        <span class="dhikr-name">الْحَمْدُ لِلَّهِ</span>
+        <span class="dhikr-target">٣٣ مرة</span>
+      </div>
+    </div>
+    <div class="dhikr-card" onclick="startTasbih('اللَّهُ أَكْبَرُ', 'الله أكبر', 34)">
+      <span class="dhikr-icon">☪️</span>
+      <div class="dhikr-info">
+        <span class="dhikr-name">اللَّهُ أَكْبَرُ</span>
+        <span class="dhikr-target">٣٤ مرة</span>
+      </div>
+    </div>
+    <div class="dhikr-card" onclick="startTasbih('لَا إِلَهَ إِلَّا اللَّهُ', 'لا إله إلا الله', 100)">
+      <span class="dhikr-icon">🌙</span>
+      <div class="dhikr-info">
+        <span class="dhikr-name">لَا إِلَهَ إِلَّا اللَّهُ</span>
+        <span class="dhikr-target">١٠٠ مرة</span>
+      </div>
+    </div>
+    <div class="dhikr-card" onclick="startTasbih('الصَّلَاةُ عَلَى النَّبِيِّ ﷺ', 'الصلاة على النبي', 100)">
+      <span class="dhikr-icon">💛</span>
+      <div class="dhikr-info">
+        <span class="dhikr-name">الصَّلَاةُ عَلَى النَّبِيِّ ﷺ</span>
+        <span class="dhikr-target">١٠٠ مرة</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COUNTER PAGE ═══ -->
+<div class="page counter-page" id="counterPage">
+
+  <div class="top-bar">
+    <button class="btn-icon" id="darkModeBtn" title="وضع الإضاءة" onclick="toggleDark()">🌙</button>
+    <span class="dhikr-label" id="counterLabel">سبحان الله</span>
+    <button class="btn-icon" title="العودة للرئيسية" onclick="goHome()">🏠</button>
+  </div>
+
+  <p class="counter-dhikr-text" id="dhikrArabic">سُبْحَانَ اللَّهِ</p>
+
+  <div class="circle-wrap" id="circleWrap" onclick="increment()">
+    <svg class="circle-svg" viewBox="0 0 200 200" id="circleSvg">
+      <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#c9a84c"/>
+          <stop offset="100%" style="stop-color:#e8c97a"/>
+        </linearGradient>
+      </defs>
+      <circle class="circle-track" cx="100" cy="100" r="85"/>
+      <circle class="circle-progress" cx="100" cy="100" r="85" id="progressCircle"/>
+    </svg>
+    <div class="circle-inner">
+      <span class="count-display" id="countDisplay">0</span>
+      <span class="count-target-label" id="targetLabel">من ٣٣</span>
+    </div>
+  </div>
+
+  <p class="progress-text" id="progressText">اضغط على الدائرة للتسبيح</p>
+
+  <button class="btn-reset" onclick="resetCount()">↺ إعادة التعداد</button>
+  <p class="hint">يمكنك الضغط على الدائرة أو أي مكان في الشاشة</p>
+</div>
+
+<!-- Completion Overlay -->
+<div class="complete-overlay" id="completeOverlay">
+  <div class="complete-emoji">🎉</div>
+  <div class="complete-text">أحسنت! اكتملت المسبحة</div>
+  <div class="complete-sub" id="completeSubText">لقد سبّحت ٣٣ مرة</div>
+  <button class="btn-continue" onclick="resetCount()">إعادة من البداية</button>
+</div>
+
+<script>
+  // Dark mode
+  let isDark = true;
+  document.body.classList.toggle('light-mode', !isDark);
+  updateDarkBtn();
+
+  function toggleDark() {
+    isDark = !isDark;
+    document.body.classList.toggle('light-mode', !isDark);
+    updateDarkBtn();
+  }
+  function updateDarkBtn() {
+    const btn = document.getElementById('darkModeBtn');
+    btn.textContent = isDark ? '☀️' : '🌙';
+    btn.title = isDark ? 'وضع النهار' : 'وضع الليل';
+  }
+
+  // State
+  let count = 0, target = 33, dhikrText = '', dhikrShort = '';
+
+  // Circle math
+  const circle = document.getElementById('progressCircle');
+  const R = 85;
+  const C = 2 * Math.PI * R;
+  circle.style.strokeDasharray = C;
+  circle.style.strokeDashoffset = C;
+
+  function updateProgress() {
+    const pct = Math.min(count / target, 1);
+    circle.style.strokeDashoffset = C - pct * C;
+  }
+
+  function toArabicNum(n) {
+    return n.toString().replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+  }
+
+  function startTasbih(arabic, short, t) {
+    dhikrText = arabic;
+    dhikrShort = short;
+    target = t;
+    count = 0;
+    document.getElementById('dhikrArabic').textContent = arabic;
+    document.getElementById('counterLabel').textContent = short;
+    document.getElementById('targetLabel').textContent = 'من ' + toArabicNum(t);
+    document.getElementById('countDisplay').textContent = '٠';
+    document.getElementById('progressText').textContent = 'اضغط على الدائرة للتسبيح';
+    updateProgress();
+    showPage('counterPage');
+  }
+
+  function increment() {
+    if (count >= target) return;
+    count++;
+
+    const disp = document.getElementById('countDisplay');
+    disp.textContent = toArabicNum(count);
+    disp.classList.remove('bump');
+    void disp.offsetWidth;
+    disp.classList.add('bump');
+    setTimeout(() => disp.classList.remove('bump'), 150);
+
+    // ripple
+    const wrap = document.getElementById('circleWrap');
+    wrap.classList.remove('ripple');
+    void wrap.offsetWidth;
+    wrap.classList.add('ripple');
+
+    updateProgress();
+
+    const rem = target - count;
+    if (rem === 0) {
+      document.getElementById('progressText').textContent = 'ما شاء الله! اكتملت المسبحة 🎉';
+      document.getElementById('completeSubText').textContent = `لقد سبّحت ${toArabicNum(target)} مرة`;
+      setTimeout(() => document.getElementById('completeOverlay').classList.add('show'), 400);
+    } else {
+      document.getElementById('progressText').textContent = `باقي ${toArabicNum(rem)} مرة`;
+    }
+
+    // vibrate
+    if ('vibrate' in navigator) navigator.vibrate(30);
+  }
+
+  function resetCount() {
+    count = 0;
+    document.getElementById('countDisplay').textContent = '٠';
+    document.getElementById('progressText').textContent = 'اضغط على الدائرة للتسبيح';
+    updateProgress();
+    document.getElementById('completeOverlay').classList.remove('show');
+  }
+
+  function goHome() {
+    showPage('homePage');
+  }
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // tap anywhere on counter page
+  document.getElementById('counterPage').addEventListener('click', function(e) {
+    if (e.target.closest('.btn-icon') || e.target.closest('.btn-reset') || e.target.closest('.circle-wrap')) return;
+    increment();
+  });
+</script>
+</body>
+</html>
