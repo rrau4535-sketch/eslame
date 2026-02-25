@@ -1,118 +1,122 @@
 /* =============================================
    Service Worker — الموسوعة الإسلامية
-   يكاش كل الصفحات ويشغّل الموقع بدون نت
+   GitHub Pages: /eslame/
    ============================================= */
 
-const CACHE_NAME = 'islamic-encyclopedia-v3';
+const CACHE_NAME = 'islamic-encyclopedia-v5';
+const BASE = '/eslame';
 
-// كل الصفحات والملفات اللي هتتكاش
+/* ── الملفات المحلية ── */
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/quran.html',
-  '/adhkar.html',
-  '/adaya.html',
-  '/ahads.html',
-  '/cbha.html',
-  '/manifest.json'
+  BASE + '/',
+  BASE + '/index.html',
+  BASE + '/quran.html',
+  BASE + '/adhkar.html',
+  BASE + '/adaya.html',
+  BASE + '/ahads.html',
+  BASE + '/cbha.html',
+  BASE + '/manifest.json',
+  BASE + '/sw.js'
 ];
 
-// روابط خارجية تتكاش (الفونتات)
-const EXTERNAL_ASSETS = [
+/* ── الفونتات الخارجية ── */
+const FONT_ASSETS = [
+  'https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:ital,wght@0,400;0,700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap',
   'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap'
 ];
 
-// ─── التثبيت: كاش كل الملفات ───
+/* ══ INSTALL ══ */
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing...');
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      // كاش الملفات المحلية
-      return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[SW] Some files failed to cache:', err);
-      });
+    caches.open(CACHE_NAME).then(async (cache) => {
+      /* كاش الملفات المحلية */
+      try { await cache.addAll(STATIC_ASSETS); } 
+      catch(e) { console.warn('[SW] local cache partial:', e); }
+      /* كاش الفونتات */
+      for (const url of FONT_ASSETS) {
+        try {
+          const res = await fetch(url, { mode: 'cors' });
+          if (res.ok) await cache.put(url, res);
+        } catch(e) {}
+      }
     }).then(() => self.skipWaiting())
   );
 });
 
-// ─── التفعيل: احذف الكاش القديم ───
+/* ══ ACTIVATE ══ */
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => {
-            console.log('[SW] Deleting old cache:', name);
-            return caches.delete(name);
-          })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
-// ─── الطلبات: Cache First ثم Network ───
+/* ══ FETCH ══ */
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+  if (!request.url.startsWith('http')) return;
+  if (request.method !== 'GET') return;
+
   const url = new URL(request.url);
 
-  // تجاهل طلبات غير HTTP
-  if (!request.url.startsWith('http')) return;
+  /* تجاهل analytics وسوشيال ميديا */
+  if (['google-analytics.com','tiktok.com','wa.me','facebook.com'].some(d => url.hostname.includes(d))) return;
 
-  // تجاهل طلبات POST والـ analytics
-  if (request.method !== 'GET') return;
-  if (url.hostname.includes('google-analytics')) return;
-  if (url.hostname.includes('tiktok')) return;
-  if (url.hostname.includes('wa.me')) return;
+  /* API القرآن — Network first (محتاج نت دايماً للآيات) */
+  if (url.hostname === 'api.alquran.cloud' || url.hostname === 'cdn.islamic.network') {
+    event.respondWith(
+      fetch(request).then(res => {
+        if (res && res.status === 200) {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then(c => c.put(request, clone));
+        }
+        return res;
+      }).catch(() => caches.match(request))
+    );
+    return;
+  }
 
+  /* فونتات Google — Cache first */
+  if (url.hostname.includes('fonts.googleapis.com') || url.hostname.includes('fonts.gstatic.com')) {
+    event.respondWith(
+      caches.match(request).then(cached => {
+        if (cached) return cached;
+        return fetch(request).then(res => {
+          if (res && res.status === 200) {
+            caches.open(CACHE_NAME).then(c => c.put(request, res.clone()));
+          }
+          return res;
+        }).catch(() => {});
+      })
+    );
+    return;
+  }
+
+  /* باقي الملفات المحلية — Cache first + background update */
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // رجّع من الكاش وحدّث في الخلفية
-        fetchAndUpdate(request);
-        return cachedResponse;
+    caches.match(request).then(cached => {
+      if (cached) {
+        /* حدّث في الخلفية */
+        fetch(request).then(res => {
+          if (res && res.status === 200)
+            caches.open(CACHE_NAME).then(c => c.put(request, res.clone()));
+        }).catch(() => {});
+        return cached;
       }
-
-      // مش موجود في الكاش، اجيبه من النت وكاشه
-      return fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
-        }
-        return networkResponse;
+      return fetch(request).then(res => {
+        if (res && res.status === 200)
+          caches.open(CACHE_NAME).then(c => c.put(request, res.clone()));
+        return res;
       }).catch(() => {
-        // لو فشل كل حاجة وكان صفحة HTML، رجّع index
-        if (request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('/index.html');
-        }
+        /* offline fallback للصفحات */
+        if (request.headers.get('accept')?.includes('text/html'))
+          return caches.match(BASE + '/index.html');
       });
     })
   );
 });
 
-// تحديث الكاش في الخلفية بدون ما المستخدم يحس
-function fetchAndUpdate(request) {
-  fetch(request).then((response) => {
-    if (response && response.status === 200) {
-      caches.open(CACHE_NAME).then((cache) => {
-        cache.put(request, response);
-      });
-    }
-  }).catch(() => {});
-}
-
-// ─── رسايل من الصفحة ───
-self.addEventListener('message', (event) => {
-  if (event.data === 'skipWaiting') {
-    self.skipWaiting();
-  }
-  // لو الصفحة طلبت تحديث الكاش يدوياً
-  if (event.data === 'updateCache') {
-    caches.open(CACHE_NAME).then((cache) => {
-      cache.addAll(STATIC_ASSETS);
-    });
-  }
+self.addEventListener('message', event => {
+  if (event.data === 'skipWaiting') self.skipWaiting();
 });

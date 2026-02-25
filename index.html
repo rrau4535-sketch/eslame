@@ -650,7 +650,7 @@ window.addEventListener('appinstalled',()=>{
 
 /* SW */
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js',{scope:'/'})
+  navigator.serviceWorker.register('/eslame/sw.js',{scope:'/eslame/'})
     .then(r=>console.log('[SW]',r.scope))
     .catch(e=>console.log('[SW] err',e));
 }
