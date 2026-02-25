@@ -487,6 +487,17 @@ body.light .fp-dname{background:#fdf6e3;}
   display:flex;align-items:center;justify-content:center;
 }
 .fp-font-ctrl button:hover{border-color:var(--bdr-h);color:var(--gold);}
+
+/* Save button in mobile header */
+.fp-save-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:12px;padding:8px 18px;
+  border-radius:20px;border:1px solid var(--bdr);
+  background:var(--surf2);color:var(--tx2);
+  font-family:'Noto Naskh Arabic',serif;font-size:.82rem;
+  cursor:pointer;transition:all .2s;
+}
+.fp-save-btn:active{transform:scale(.97);}
 </style>
 </head>
 <body>
@@ -525,6 +536,7 @@ body.light .fp-dname{background:#fdf6e3;}
     <div class="reader">
       <div class="mob-surah-bar"><select id="mobSurahSel" onchange="selectSurah(this.value)"><option value="">اختر السورة...</option></select></div>
       <div class="offline-bar" id="offlineBar">📴 وضع عدم الاتصال — السور المحفوظة فقط</div>
+      <div id="dlBannerDesk" style="display:none;align-items:center;gap:9px;background:rgba(196,160,60,.08);border:1px solid var(--bdr);border-radius:11px;padding:11px 16px;margin-bottom:18px;font-size:.86rem;color:var(--gold);"></div>
 
       <div class="empty-state" id="emptyState">
         <div class="empty-icon">📖</div>
@@ -594,6 +606,9 @@ body.light .fp-dname{background:#fdf6e3;}
   <div class="mob-surah-picker">
     <select id="mobFlipSel" onchange="selectSurah(this.value)"><option value="">اختر السورة...</option></select>
   </div>
+
+  <!-- Download banner -->
+  <div id="dlBanner" style="display:none;align-items:center;justify-content:center;gap:8px;padding:8px 14px;font-size:.8rem;background:rgba(196,160,60,.1);border-bottom:1px solid var(--bdr);color:var(--gold);text-align:center;flex-shrink:0;"></div>
 
   <!-- Flip area -->
   <div class="flip-wrap" id="flipWrap">
@@ -850,15 +865,85 @@ async function selectSurah(n){
 }
 
 /* ══════════════════════════════
-   FETCH DATA
+   FETCH DATA — القرآن كامل أوفلاين
+   تحميل مرة واحدة → حفظ دائم
 ══════════════════════════════ */
-async function fetchSurah(n){
-  if(surahCache[n]) return surahCache[n];
+
+const QURAN_CDN   = 'https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/quran.json';
+const STORAGE_KEY = 'quranFullData_v1';
+let   quranReady  = false;   // true لما القرآن كامل موجود
+
+/* تحويل صيغة quran-json لصيغتنا */
+function convertSurah(raw){
+  return {
+    n      : raw.id,
+    name   : raw.name,
+    ayahs  : raw.verses.map(v=>({ numberInSurah: v.id, text: v.text })),
+    tafseer: null
+  };
+}
+
+/* ── تحميل القرآن كامل (مرة واحدة) ── */
+async function initQuranData(){
+  /* هل محفوظ أصلاً؟ */
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const allSurahs = JSON.parse(raw);
+      /* حط كل شيء في الـ memory cache */
+      Object.values(allSurahs).forEach(s=>{ surahCache[s.n]=s; });
+      quranReady = true;
+      updateDownloadBanner(true);
+      return;
+    }
+  }catch(e){}
+
+  /* مش موجود — هنحاول نحمله لو في نت */
   if(!navigator.onLine){
-    const sv = savedSurahs.find(s=>s.n==n);
-    if(sv) return sv;
-    return null;
+    updateDownloadBanner(false);
+    return;
   }
+
+  showDownloadProgress(0);
+  try{
+    const res  = await fetch(QURAN_CDN);
+    const json = await res.json();   /* array of 114 surahs */
+
+    const allSurahs = {};
+    json.forEach(raw=>{
+      const s = convertSurah(raw);
+      allSurahs[s.n] = s;
+      surahCache[s.n] = s;
+    });
+
+    /* احفظ في localStorage */
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(allSurahs));
+    quranReady = true;
+    hideDownloadProgress();
+    updateDownloadBanner(true);
+    showToast('✅ تم تحميل القرآن كامل — يعمل الآن بدون إنترنت!');
+  }catch(e){
+    hideDownloadProgress();
+    updateDownloadBanner(false);
+    showToast('⚠️ تعذّر تحميل القرآن — تحقق من الاتصال');
+  }
+}
+
+/* ── جيب سورة (من الكاش دايماً لو القرآن محمّل) ── */
+async function fetchSurah(n){
+  /* 1. memory cache */
+  if(surahCache[n]) return surahCache[n];
+
+  /* 2. مش موجود في الكاش — جرّب تحمّل القرآن كامل أول */
+  if(navigator.onLine && !quranReady){
+    await initQuranData();
+    if(surahCache[n]) return surahCache[n];
+  }
+
+  /* 3. أوفلاين والقرآن مش محمّل */
+  if(!navigator.onLine) return null;
+
+  /* 4. fallback: جيب السورة لوحدها من الـ API القديم */
   try{
     const [qRes, tRes] = await Promise.all([
       fetch(`https://api.alquran.cloud/v1/surah/${n}/quran-uthmani`),
@@ -871,6 +956,60 @@ async function fetchSurah(n){
     return result;
   }catch(e){ return null; }
 }
+
+/* ── بانر حالة التحميل ── */
+function updateDownloadBanner(ready){
+  const mob  = document.getElementById('dlBanner');
+  const desk = document.getElementById('dlBannerDesk');
+  if(ready){
+    [mob,desk].forEach(b=>{
+      if(!b) return;
+      b.style.display='flex';
+      b.innerHTML='✅ القرآن محفوظ بالكامل — يعمل بدون إنترنت';
+      b.style.color='#7ed9a0';
+      b.style.borderColor='rgba(42,92,56,.5)';
+      b.style.background='rgba(42,92,56,.2)';
+      setTimeout(()=>{ b.style.display='none'; },5000);
+    });
+  } else if(!navigator.onLine){
+    [mob,desk].forEach(b=>{
+      if(!b) return;
+      b.style.display='flex';
+      b.innerHTML='📴 القرآن غير محفوظ على جهازك — اتصل بالإنترنت مرة واحدة لتحميله تلقائياً';
+      b.style.color='var(--gold)';
+    });
+  } else {
+    [mob,desk].forEach(b=>{ if(b) b.style.display='none'; });
+  }
+}
+
+function showDownloadProgress(pct){
+  [document.getElementById('dlBanner'), document.getElementById('dlBannerDesk')].forEach(b=>{
+    if(!b) return;
+    b.style.display='flex';
+    b.innerHTML=`⬇️ جاري تحميل القرآن كامل للقراءة بدون نت...`;
+    b.style.color='var(--gold)';
+  });
+}
+function hideDownloadProgress(){
+  [document.getElementById('dlBanner'), document.getElementById('dlBannerDesk')].forEach(b=>{
+    if(b) b.style.display='none';
+  });
+}
+
+/* ── زرار حذف بيانات القرآن (اختياري) ── */
+function deleteQuranData(){
+  localStorage.removeItem(STORAGE_KEY);
+  Object.keys(surahCache).forEach(k=>delete surahCache[k]);
+  quranReady = false;
+  showToast('🗑️ تم حذف بيانات القرآن');
+  updateDownloadBanner(false);
+}
+
+/* ── حفظ تلقائي في localStorage (للتوافق) ── */
+function autoSaveToStorage(data){ /* no-op — القرآن كامل محفوظ */ }
+function loadSurahFromStorage(n){ return surahCache[n]||null; }
+function getSavedNums(){ return Object.keys(surahCache).map(Number); }
 
 /* ══════════════════════════════
    DESKTOP LOAD
@@ -948,7 +1087,13 @@ async function loadMobile(n){
   document.getElementById('flipEmpty').style.display = 'none';
 
   const data = await fetchSurah(n);
-  if(!data){ hideMobLoader(); showToast('❌ فشل التحميل'); isMobLoading=false; return; }
+  if(!data){
+    hideMobLoader();
+    /* أوفلاين وما فيش كاش — وضّح للمستخدم */
+    showOfflineHelp(n);
+    isMobLoading=false;
+    return;
+  }
 
   const meta = SM.find(s=>s.n==n)||{};
   document.getElementById('mobTitle').textContent = `سورة ${data.name}`;
@@ -986,6 +1131,7 @@ function buildMobPages(data, meta){
         <div class="fp-surah-name">سورة ${data.name}</div>
         <div class="fp-meta">${meta.rev||''} · ${toAr(meta.ayahs||ayahs.length)} آية · ${meta.nameEn||''}</div>
         ${meta.n !== 9 ? `<div class="fp-bism">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>` : ''}
+        <button class="fp-save-btn" id="fpSaveBtn" onclick="toggleMobSave()">💾 احفظ للقراءة بدون نت</button>
       </div>
       <div class="fp-audio">
         <span class="fp-audio-lbl">🎙️</span>
@@ -1032,8 +1178,10 @@ function renderMobPage(idx, dir){
   const texts = fp.querySelectorAll('.fp-text');
   texts.forEach(t => t.style.fontSize = mobFontSize + 'rem');
 
-  // if first page, re-bind audio
-  if(mobPages[idx].isFirst) setTimeout(updateMobAudio, 50);
+  // if first page, re-bind audio and save btn
+  if(mobPages[idx].isFirst){
+    setTimeout(()=>{ updateMobAudio(); updateMobSaveBtn(); }, 50);
+  }
 
   updateMobNav();
 
@@ -1094,6 +1242,67 @@ function closeEos(){ document.getElementById('eosPopup').classList.remove('show'
 function goNextSurah(){
   closeEos();
   if(currentSurah < 114) selectSurah(currentSurah + 1);
+}
+
+/* ── إظهار شاشة أوفلاين مع السور المحفوظة ── */
+function showOfflineHelp(requestedN){
+  const savedNums = getSavedNums();
+  const meta = SM.find(s=>s.n==requestedN);
+  let html = `
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:18px;text-align:center;padding:24px;">
+      <div style="font-size:3rem">📴</div>
+      <div style="font-family:'Amiri',serif;font-size:1.5rem;color:var(--tx2);">لا يوجد اتصال بالإنترنت</div>
+      <div style="font-size:.88rem;color:var(--tx3);line-height:1.7;">
+        سورة ${meta?.name||''} غير محفوظة على جهازك.<br>
+        افتحها مرة وأنت متصل وستُحفظ تلقائياً 💾
+      </div>`;
+  if(savedNums.length > 0){
+    html += `<div style="font-size:.85rem;color:var(--gold);margin-top:4px;">السور المحفوظة لديك:</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:300px;">`;
+    savedNums.forEach(n=>{
+      const m = SM.find(s=>s.n==n);
+      if(m) html += `<button onclick="selectSurah(${n})" style="padding:7px 14px;border-radius:18px;border:1px solid var(--bdr-h);background:var(--surf2);color:var(--gold-l);font-family:'Noto Naskh Arabic',serif;font-size:.82rem;cursor:pointer;">${m.name}</button>`;
+    });
+    html += `</div>`;
+  }
+  html += `</div>`;
+  const fp = document.getElementById('flipPage');
+  fp.style.display = 'block';
+  fp.innerHTML = html;
+  hideMobLoader();
+}
+
+/* ── زرار الحفظ في الموبايل ── */
+function toggleMobSave(){
+  if(!currentSurah) return;
+  const savedNums = getSavedNums();
+  const alreadySaved = savedNums.includes(currentSurah);
+  if(alreadySaved){
+    /* احذف */
+    try{
+      localStorage.removeItem(`surah_${currentSurah}`);
+      const newNums = savedNums.filter(n=>n!==currentSurah);
+      localStorage.setItem('savedNums', JSON.stringify(newNums));
+      showToast('🗑️ تم حذف السورة من المحفوظات');
+    }catch(e){}
+  } else {
+    /* احفظ من الكاش */
+    const data = surahCache[currentSurah];
+    if(data){ autoSaveToStorage(data); showToast('✅ تم حفظ السورة — تقدر تقراها بدون نت'); }
+    else { showToast('⚠️ اتظر حتى تنتهي من التحميل'); return; }
+  }
+  updateMobSaveBtn();
+  renderSavedPills();
+}
+
+function updateMobSaveBtn(){
+  const btn = document.getElementById('fpSaveBtn');
+  if(!btn || !currentSurah) return;
+  const saved = getSavedNums().includes(currentSurah);
+  btn.textContent = saved ? '✓ محفوظة بدون نت' : '💾 احفظ للقراءة بدون نت';
+  btn.style.background = saved ? 'rgba(196,160,60,.15)' : 'var(--surf2)';
+  btn.style.color = saved ? 'var(--gold-l)' : 'var(--tx2)';
+  btn.style.borderColor = saved ? 'var(--bdr-h)' : 'var(--bdr)';
 }
 
 /* ── Touch swipe ── */
@@ -1205,14 +1414,16 @@ window.addEventListener('resize', ()=>{
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
-window.addEventListener('DOMContentLoaded', ()=>{
+window.addEventListener('DOMContentLoaded', async ()=>{
   buildSidebars();
   checkOnline();
   if(localStorage.getItem('qTheme')==='light') document.body.classList.add('light');
-  savedSurahs = JSON.parse(localStorage.getItem('savedSurahs')||'[]');
-  // reload saved into cache
-  savedSurahs.forEach(s=>{ if(s.ayahs) surahCache[s.n]=s; });
+
+  savedSurahs = [];
   renderSavedPills();
+
+  /* ✅ تحميل القرآن كامل (من الكاش لو موجود، من النت لو مش موجود) */
+  await initQuranData();
 
   const last = localStorage.getItem('qLastSurah');
   if(last) selectSurah(parseInt(last));
