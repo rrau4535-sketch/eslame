@@ -172,7 +172,8 @@ body.light .header.scrolled{background:rgba(240,232,213,.93);}
 .needle-wrap{
   position:absolute;inset:0;
   border-radius:50%;
-  transition:transform .15s var(--ease);
+  transition:transform .08s linear;
+  will-change:transform;
 }
 .needle{
   position:absolute;left:50%;top:50%;
@@ -205,7 +206,8 @@ body.light .header.scrolled{background:rgba(240,232,213,.93);}
 /* Qibla arrow — rotates to point to Mecca */
 .qibla-arrow-wrap{
   position:absolute;inset:0;border-radius:50%;
-  transition:transform .4s var(--ease);
+  transition:transform .08s linear;
+  will-change:transform;
 }
 .qibla-arrow{
   position:absolute;left:50%;top:14px;
@@ -626,52 +628,120 @@ function angleToDirection(deg){
 }
 
 /* ════════════════════════════
-   COMPASS (Device Orientation)
+   COMPASS — نسخة محسّنة
+   إصلاح: استقرار + دقة + Android/iOS
 ════════════════════════════ */
+
+/* ── Low-pass filter لتنعيم الحركة ── */
+const ALPHA       = 0.15;   // كلما صغّر = أهدأ (0.05~0.2)
+let   smoothedSin = 0;
+let   smoothedCos = 0;
+let   lastRawHeading = null;
+let   absoluteUsed   = false;   // هل استخدمنا deviceorientationabsolute؟
+let   rafId = null;
+let   pendingHeading = null;
+
+function smoothHeading(newHeading){
+  /* Low-pass filter على sin/cos عشان نتجنب مشكلة 0↔360 */
+  const rad  = newHeading * Math.PI / 180;
+  smoothedSin = ALPHA * Math.sin(rad) + (1-ALPHA) * smoothedSin;
+  smoothedCos = ALPHA * Math.cos(rad) + (1-ALPHA) * smoothedCos;
+  return ((Math.atan2(smoothedSin, smoothedCos) * 180 / Math.PI) + 360) % 360;
+}
+
 function startCompass(){
+  /* iOS 13+ يحتاج إذن صريح من المستخدم */
   if(isIOS && typeof DeviceOrientationEvent?.requestPermission === 'function'){
-    /* iOS 13+ needs permission */
     DeviceOrientationEvent.requestPermission()
-      .then(state=>{
-        if(state==='granted') listenOrientation();
-        else showToast('⚠️ لم يتم منح إذن البوصلة على iOS');
-      }).catch(()=> showToast('⚠️ تعذّر تفعيل البوصلة'));
+      .then(state => {
+        if(state === 'granted'){
+          listenOrientation();
+        } else {
+          setStatus('err','لم يتم منح إذن البوصلة — جرّب مرة أخرى');
+          showToast('⚠️ افتح الإعدادات واسمح بالبوصلة لهذا الموقع');
+        }
+      })
+      .catch(() => {
+        /* fallback: حاول بدون إذن */
+        listenOrientation();
+      });
   } else {
     listenOrientation();
   }
 }
 
 function listenOrientation(){
-  const handler = e => {
+  /* ── Handler الموحّد ── */
+  const handleEvent = (e, isAbsolute) => {
+    /* لو عندنا absolute، تجاهل relative */
+    if(!isAbsolute && absoluteUsed) return;
+
     let heading = null;
-    if(e.webkitCompassHeading != null){
-      /* iOS: webkitCompassHeading = degrees from north, CW */
+
+    if(e.webkitCompassHeading != null && e.webkitCompassHeading !== 0){
+      /* iOS — أدق مصدر، مباشر من المغناطيسية */
       heading = e.webkitCompassHeading;
-    } else if(e.alpha != null){
-      /* Android: alpha = rotation around Z, CCW from north */
-      heading = (360 - e.alpha) % 360;
+
+    } else if(isAbsolute && e.alpha != null){
+      /* Android مع absolute — موثوق جداً */
+      heading = (360 - e.alpha % 360 + 360) % 360;
+      absoluteUsed = true;
+
+    } else if(!absoluteUsed && e.alpha != null){
+      /* Android بدون absolute — نستخدمه كـ fallback */
+      heading = (360 - e.alpha % 360 + 360) % 360;
     }
+
     if(heading == null) return;
 
+    /* فلتر القفزات الكبيرة (> 180° فرق مفاجئ = noise) */
+    if(lastRawHeading !== null){
+      let diff = heading - lastRawHeading;
+      if(diff > 180)  diff -= 360;
+      if(diff < -180) diff += 360;
+      if(Math.abs(diff) > 90) return; /* تجاهل القفزة */
+    }
+    lastRawHeading = heading;
+
     compassSupported = true;
-    deviceHeading = heading;
-    updateQiblaArrow();
-    updateNeedle();
+    pendingHeading   = heading;
   };
 
-  window.addEventListener('deviceorientationabsolute', handler, true);
-  window.addEventListener('deviceorientation', handler, true);
+  window.addEventListener('deviceorientationabsolute', e => handleEvent(e, true),  {passive:true});
+  window.addEventListener('deviceorientation',         e => handleEvent(e, false), {passive:true});
+
+  /* ── RAF loop: تحديث الشاشة بسلاسة ── */
+  function renderLoop(){
+    if(pendingHeading !== null){
+      deviceHeading  = smoothHeading(pendingHeading);
+      pendingHeading = null;
+      updateQiblaArrow();
+      updateNeedle();
+    }
+    rafId = requestAnimationFrame(renderLoop);
+  }
+  renderLoop();
+
+  /* لو مفيش بوصلة بعد 3 ثواني، وضّح للمستخدم */
+  setTimeout(()=>{
+    if(!compassSupported){
+      setStatus('ok','الموقع محدد · البوصلة غير متاحة على هذا الجهاز');
+      showToast('📍 القبلة محسوبة من الموقع فقط — بدون بوصلة');
+    }
+  }, 3000);
 }
 
 function updateQiblaArrow(){
-  /* السهم يشير للقبلة مع مراعاة اتجاه الجهاز */
+  /* السهم يشير للقبلة مع تعويض اتجاه الجهاز */
   const rotation = qiblaAngle - deviceHeading;
-  document.getElementById('qiblaArrow').style.transform = `rotate(${rotation}deg)`;
+  document.getElementById('qiblaArrow').style.transform =
+    `rotate(${rotation}deg)`;
 }
 
 function updateNeedle(){
-  /* الإبرة الحمرا تشير للشمال دايماً */
-  document.getElementById('needleWrap').style.transform = `rotate(${-deviceHeading}deg)`;
+  /* إبرة الشمال تدور عكس الجهاز */
+  document.getElementById('needleWrap').style.transform =
+    `rotate(${-deviceHeading}deg)`;
 }
 
 /* ════════════════════════════
