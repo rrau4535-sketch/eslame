@@ -3,7 +3,7 @@
    GitHub Pages: /eslame/
    ============================================= */
 
-const CACHE_NAME = 'islamic-encyclopedia-v5';
+const CACHE_NAME = 'islamic-encyclopedia-v6';
 const BASE = '/eslame';
 
 /* ── الملفات المحلية ── */
@@ -15,6 +15,7 @@ const STATIC_ASSETS = [
   BASE + '/adaya.html',
   BASE + '/ahads.html',
   BASE + '/cbha.html',
+  BASE + '/qibla.html',
   BASE + '/manifest.json',
   BASE + '/sw.js'
 ];

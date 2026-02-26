@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اتجاه القبلة وأقرب مسجد</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c1a12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══ TOKENS ══ */
+:root{
+  --bg:#080f0a; --surf:#111d14; --surf2:#172218; --surf3:#1e2e20;
+  --bdr:rgba(196,160,60,.18); --bdr-h:rgba(196,160,60,.45);
+  --gold:#c4a03c; --gold-l:#e0bc5a; --gold-d:#8a6e26; --glow:rgba(196,160,60,.22);
+  --tx:#f0e8d8; --tx2:#b8a890; --tx3:#7a6e5e;
+  --grn:#2a5c38; --grn-l:#3d7a50;
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+body.light{
+  --bg:#f0e8d5; --surf:#fdf6e3; --surf2:#f5ecd5; --surf3:#ede3cc;
+  --bdr:rgba(120,90,20,.15); --bdr-h:rgba(120,90,20,.4);
+  --gold:#7a5a10; --gold-l:#9a7218; --gold-d:#c8a84a; --glow:rgba(122,90,16,.15);
+  --tx:#1a1005; --tx2:#5a4820; --tx3:#8a7a5a;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Naskh Arabic',serif;
+  background:var(--bg);color:var(--tx);
+  min-height:100vh;
+  transition:background .4s,color .4s;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    repeating-linear-gradient(60deg,transparent,transparent 38px,rgba(196,160,60,.016) 38px,rgba(196,160,60,.016) 39px),
+    repeating-linear-gradient(-60deg,transparent,transparent 38px,rgba(196,160,60,.016) 38px,rgba(196,160,60,.016) 39px);
+  pointer-events:none;z-index:0;
+}
+
+/* ══ HEADER ══ */
+.header{
+  position:sticky;top:0;z-index:100;
+  padding:0 20px;
+  transition:all .3s;
+}
+.header.scrolled{
+  background:rgba(8,15,10,.93);border-bottom:1px solid var(--bdr);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+body.light .header.scrolled{background:rgba(240,232,213,.93);}
+.hinner{
+  max-width:600px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0;gap:12px;
+}
+.back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  color:var(--tx2);font-size:.85rem;text-decoration:none;
+  padding:7px 14px;border:1px solid var(--bdr);border-radius:28px;transition:all .2s;
+}
+.back-btn:hover{border-color:var(--bdr-h);color:var(--gold-l);}
+.h-title{font-family:'Amiri',serif;font-size:1.1rem;color:var(--gold-l);}
+.h-acts{display:flex;gap:7px;}
+.hbtn{
+  width:35px;height:35px;border-radius:50%;border:1px solid var(--bdr);
+  background:var(--surf);color:var(--tx2);font-size:.88rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.hbtn:hover{border-color:var(--bdr-h);color:var(--gold);}
+
+/* ══ MAIN ══ */
+.page{max-width:600px;margin:0 auto;padding:24px 16px 60px;position:relative;z-index:1;}
+
+/* ══ PERMISSION CARD ══ */
+.perm-card{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:22px;
+  padding:40px 28px;text-align:center;
+  animation:fdIn .5s var(--ease);
+}
+@keyframes fdIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.perm-icon{font-size:3.5rem;margin-bottom:16px;}
+.perm-title{font-family:'Amiri',serif;font-size:1.9rem;color:var(--gold-l);margin-bottom:8px;}
+.perm-sub{font-size:.9rem;color:var(--tx3);line-height:1.8;margin-bottom:28px;}
+.perm-btn{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:14px 32px;border-radius:14px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold-d),var(--gold));
+  color:#0c1008;font-family:'Noto Naskh Arabic',serif;
+  font-weight:700;font-size:1rem;transition:all .2s;
+  box-shadow:0 4px 18px var(--glow);
+}
+.perm-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--glow);}
+.perm-btn:active{transform:scale(.97);}
+
+/* ══ COMPASS SECTION ══ */
+.compass-section{
+  display:none;
+  flex-direction:column;align-items:center;gap:20px;
+  animation:fdIn .5s var(--ease);
+}
+.compass-section.show{display:flex;}
+
+/* Status badge */
+.status-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 18px;border-radius:24px;
+  background:var(--surf2);border:1px solid var(--bdr);
+  font-size:.82rem;color:var(--tx2);
+}
+.status-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--gold);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.7);}}
+.status-dot.ok{background:#4ade80;animation:none;}
+.status-dot.err{background:#f87171;animation:none;}
+
+/* Qibla angle display */
+.angle-info{
+  text-align:center;
+  background:var(--surf);border:1px solid var(--bdr);border-radius:18px;
+  padding:20px 28px;width:100%;
+}
+.angle-val{font-family:'Amiri',serif;font-size:3rem;color:var(--gold-l);line-height:1;}
+.angle-label{font-size:.8rem;color:var(--tx3);margin-top:4px;}
+.angle-dir{font-size:.95rem;color:var(--tx2);margin-top:8px;}
+
+/* ══ COMPASS RING ══ */
+.compass-wrap{position:relative;width:280px;height:280px;}
+
+/* outer ring */
+.compass-ring{
+  position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(
+    from 0deg,
+    rgba(196,160,60,.08) 0deg,
+    rgba(196,160,60,.04) 90deg,
+    rgba(196,160,60,.08) 180deg,
+    rgba(196,160,60,.04) 270deg,
+    rgba(196,160,60,.08) 360deg
+  );
+  border:2px solid var(--bdr);
+  box-shadow:0 0 40px rgba(196,160,60,.08), inset 0 0 40px rgba(0,0,0,.3);
+}
+
+/* cardinal labels */
+.compass-labels{position:absolute;inset:0;border-radius:50%;}
+.compass-labels span{
+  position:absolute;font-family:'Amiri',serif;font-size:.95rem;
+  color:var(--tx3);font-weight:700;
+}
+.lbl-n{top:8px;left:50%;transform:translateX(-50%);color:var(--gold);}
+.lbl-s{bottom:8px;left:50%;transform:translateX(-50%);}
+.lbl-e{right:8px;top:50%;transform:translateY(-50%);}
+.lbl-w{left:8px;top:50%;transform:translateY(-50%);}
+
+/* tick marks */
+.ticks{position:absolute;inset:0;border-radius:50%;}
+.tick{
+  position:absolute;width:1px;background:var(--bdr);
+  left:50%;transform-origin:bottom center;
+}
+
+/* compass needle — rotates to show NORTH */
+.needle-wrap{
+  position:absolute;inset:0;
+  border-radius:50%;
+  transition:transform .15s var(--ease);
+}
+.needle{
+  position:absolute;left:50%;top:50%;
+  width:4px;margin-left:-2px;
+  transform-origin:bottom center;
+}
+.needle-north{
+  height:110px;margin-top:-110px;
+  background:linear-gradient(to top,transparent 10%,#f87171 10%);
+  border-radius:4px 4px 0 0;
+  clip-path:polygon(50% 0%,100% 100%,50% 80%,0% 100%);
+  width:16px;margin-left:-8px;
+}
+.needle-south{
+  height:80px;
+  background:linear-gradient(to bottom,transparent 10%,var(--tx3) 10%);
+  border-radius:0 0 4px 4px;
+  clip-path:polygon(50% 100%,100% 0%,50% 20%,0% 0%);
+  width:16px;margin-left:-8px;
+}
+.needle-center{
+  position:absolute;
+  width:14px;height:14px;
+  background:var(--surf3);border:2px solid var(--gold);
+  border-radius:50%;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  z-index:10;
+}
+
+/* Qibla arrow — rotates to point to Mecca */
+.qibla-arrow-wrap{
+  position:absolute;inset:0;border-radius:50%;
+  transition:transform .4s var(--ease);
+}
+.qibla-arrow{
+  position:absolute;left:50%;top:14px;
+  transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.qibla-arrow-head{
+  width:0;height:0;
+  border-left:10px solid transparent;
+  border-right:10px solid transparent;
+  border-bottom:22px solid var(--gold-l);
+  filter:drop-shadow(0 0 6px var(--glow));
+}
+.qibla-arrow-shaft{
+  width:4px;height:90px;
+  background:linear-gradient(to bottom,var(--gold-l),transparent);
+  border-radius:2px;
+}
+.kaaba-icon{
+  position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  font-size:1.5rem;
+  filter:drop-shadow(0 0 8px var(--glow));
+}
+
+/* accuracy bar */
+.accuracy-wrap{
+  width:100%;background:var(--surf);border:1px solid var(--bdr);
+  border-radius:14px;padding:14px 18px;
+}
+.accuracy-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.accuracy-label{font-size:.78rem;color:var(--tx3);}
+.accuracy-val{font-size:.78rem;color:var(--gold);}
+.accuracy-bar{height:4px;background:var(--surf3);border-radius:2px;overflow:hidden;}
+.accuracy-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));transition:width .5s;}
+
+/* calibrate tip */
+.cal-tip{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(196,160,60,.06);border:1px solid var(--bdr);
+  border-radius:12px;padding:12px 16px;
+  font-size:.8rem;color:var(--tx3);width:100%;
+}
+.cal-tip-icon{font-size:1.2rem;flex-shrink:0;}
+
+/* ══ MOSQUE SECTION ══ */
+.mosque-section{
+  margin-top:8px;width:100%;
+  background:var(--surf);border:1px solid var(--bdr);border-radius:22px;
+  overflow:hidden;
+}
+.mosque-head{
+  padding:18px 20px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.mosque-head::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.mosque-head-title{
+  font-family:'Amiri',serif;font-size:1.2rem;color:var(--gold-l);
+  display:flex;align-items:center;gap:9px;
+}
+.mosque-find-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:10px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold-d),var(--gold));
+  color:#0c1008;font-family:'Noto Naskh Arabic',serif;
+  font-weight:700;font-size:.82rem;transition:all .2s;
+  box-shadow:0 3px 12px var(--glow);
+}
+.mosque-find-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px var(--glow);}
+.mosque-find-btn:active{transform:scale(.97);}
+.mosque-find-btn:disabled{opacity:.5;cursor:default;transform:none;}
+
+.mosque-body{padding:16px;}
+
+/* mosque placeholder */
+.mosque-placeholder{
+  text-align:center;padding:28px 16px;color:var(--tx3);font-size:.88rem;line-height:2;
+}
+.mosque-placeholder .mp-icon{font-size:2.5rem;margin-bottom:8px;opacity:.5;}
+
+/* mosque result */
+.mosque-result{display:none;animation:fdIn .4s var(--ease);}
+.mosque-result.show{display:block;}
+
+.mosque-card{
+  border:1px solid var(--bdr);border-radius:14px;overflow:hidden;
+  transition:all .2s;
+}
+.mosque-card:hover{border-color:var(--bdr-h);}
+
+.mc-info{padding:16px 18px;display:flex;align-items:flex-start;gap:14px;}
+.mc-icon-wrap{
+  width:46px;height:46px;border-radius:12px;
+  background:rgba(196,160,60,.12);border:1px solid var(--bdr-h);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;flex-shrink:0;
+}
+.mc-details{flex:1;}
+.mc-name{font-family:'Amiri',serif;font-size:1.1rem;color:var(--tx);margin-bottom:4px;}
+.mc-dist{font-size:.8rem;color:var(--gold);display:flex;align-items:center;gap:5px;}
+.mc-addr{font-size:.76rem;color:var(--tx3);margin-top:4px;line-height:1.6;}
+
+.mc-btns{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-top:1px solid var(--bdr);
+}
+.mc-btn{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:12px;font-family:'Noto Naskh Arabic',serif;font-size:.82rem;
+  color:var(--tx2);cursor:pointer;text-decoration:none;
+  transition:all .2s;background:transparent;border:none;
+}
+.mc-btn:hover{background:var(--surf2);color:var(--gold-l);}
+.mc-btn:first-child{border-left:1px solid var(--bdr);}
+
+/* iOS specific btn */
+.mc-btn-ios{
+  display:none;
+  grid-column:1/-1;
+  border-top:1px solid var(--bdr);
+  padding:12px;font-family:'Noto Naskh Arabic',serif;font-size:.82rem;
+  color:var(--tx2);cursor:pointer;text-decoration:none;
+  align-items:center;justify-content:center;gap:7px;
+  transition:all .2s;background:transparent;border:none;width:100%;
+}
+.mc-btn-ios.show{display:flex;}
+.mc-btn-ios:hover{background:rgba(0,122,255,.08);color:#007AFF;}
+
+/* mosque loading */
+.mosque-loading{
+  display:none;align-items:center;justify-content:center;gap:10px;
+  padding:28px;color:var(--tx3);font-size:.88rem;
+}
+.mosque-loading.show{display:flex;}
+.mini-spin{
+  width:20px;height:20px;border:2px solid var(--bdr);
+  border-top-color:var(--gold);border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ══ LOCATION INFO ══ */
+.loc-info{
+  width:100%;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:14px;padding:14px 18px;
+  display:flex;align-items:center;gap:12px;
+  font-size:.82rem;color:var(--tx3);
+}
+.loc-info-icon{font-size:1.2rem;flex-shrink:0;}
+.loc-coords{color:var(--tx2);}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(70px);
+  background:var(--surf3);border:1px solid var(--bdr-h);
+  color:var(--gold-l);padding:11px 22px;border-radius:28px;
+  font-size:.88rem;font-weight:600;z-index:9999;
+  transition:transform .3s var(--ease);
+  box-shadow:0 8px 22px rgba(0,0,0,.4);white-space:nowrap;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:3px;}
+::selection{background:rgba(196,160,60,.25);}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="hinner">
+    <a href="index.html" class="back-btn">⬅ الرئيسية</a>
+    <span class="h-title">القبلة والمساجد</span>
+    <div class="h-acts">
+      <button class="hbtn" onclick="toggleTheme()">🌓</button>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- PERMISSION CARD -->
+  <div class="perm-card" id="permCard">
+    <div class="perm-icon">🕌</div>
+    <div class="perm-title">اتجاه القبلة</div>
+    <div class="perm-sub">
+      للحصول على اتجاه القبلة الدقيق وأقرب مسجد إليك،<br>
+      نحتاج إذنك للوصول إلى موقعك الجغرافي
+    </div>
+    <button class="perm-btn" onclick="requestLocation()">
+      📍 تحديد موقعي
+    </button>
+  </div>
+
+  <!-- COMPASS SECTION -->
+  <div class="compass-section" id="compassSection">
+
+    <!-- Status -->
+    <div class="status-badge">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">جاري تحديد الموقع...</span>
+    </div>
+
+    <!-- Angle info -->
+    <div class="angle-info">
+      <div class="angle-val"><span id="qiblaAngle">—</span>°</div>
+      <div class="angle-label">اتجاه القبلة من الشمال</div>
+      <div class="angle-dir" id="qiblaDir">—</div>
+    </div>
+
+    <!-- Compass -->
+    <div class="compass-wrap" id="compassWrap">
+      <div class="compass-ring"></div>
+
+      <!-- Tick marks -->
+      <div class="ticks" id="ticksContainer"></div>
+
+      <!-- Cardinal labels -->
+      <div class="compass-labels">
+        <span class="lbl-n">ش</span>
+        <span class="lbl-s">ج</span>
+        <span class="lbl-e">ق</span>
+        <span class="lbl-w">غ</span>
+      </div>
+
+      <!-- Qibla arrow (points to Mecca) -->
+      <div class="qibla-arrow-wrap" id="qiblaArrow">
+        <div class="qibla-arrow">
+          <div class="qibla-arrow-head"></div>
+          <div class="qibla-arrow-shaft"></div>
+        </div>
+        <div class="kaaba-icon">🕋</div>
+      </div>
+
+      <!-- Compass needle (rotates with device) -->
+      <div class="needle-wrap" id="needleWrap">
+        <div class="needle needle-north"></div>
+        <div class="needle needle-south"></div>
+      </div>
+      <div class="needle-center"></div>
+    </div>
+
+    <!-- Accuracy -->
+    <div class="accuracy-wrap">
+      <div class="accuracy-row">
+        <span class="accuracy-label">دقة الموقع</span>
+        <span class="accuracy-val" id="accuracyVal">—</span>
+      </div>
+      <div class="accuracy-bar">
+        <div class="accuracy-fill" id="accuracyFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Calibration tip -->
+    <div class="cal-tip">
+      <div class="cal-tip-icon">💡</div>
+      <div>لتحسين الدقة، حرّك هاتفك بشكل رقم 8 في الهواء لمعايرة البوصلة</div>
+    </div>
+
+    <!-- Location info -->
+    <div class="loc-info">
+      <div class="loc-info-icon">📍</div>
+      <div>
+        <div class="loc-coords" id="locCoords">جاري التحديد...</div>
+        <div>الموقع الحالي · المسافة إلى مكة: <span id="distMecca" style="color:var(--gold)">—</span></div>
+      </div>
+    </div>
+
+    <!-- MOSQUE SECTION -->
+    <div class="mosque-section">
+      <div class="mosque-head">
+        <div class="mosque-head-title">🕌 أقرب مسجد</div>
+        <button class="mosque-find-btn" id="findMosqueBtn" onclick="findNearestMosque()">
+          🔍 ابحث الآن
+        </button>
+      </div>
+      <div class="mosque-body">
+        <div class="mosque-placeholder" id="mosquePlaceholder">
+          <div class="mp-icon">🗺️</div>
+          اضغط "ابحث الآن" لإيجاد أقرب مسجد إليك
+        </div>
+        <div class="mosque-loading" id="mosqueLoading">
+          <div class="mini-spin"></div>
+          جاري البحث عن أقرب مسجد...
+        </div>
+        <div class="mosque-result" id="mosqueResult">
+          <div class="mosque-card">
+            <div class="mc-info">
+              <div class="mc-icon-wrap">🕌</div>
+              <div class="mc-details">
+                <div class="mc-name" id="mosqueName">—</div>
+                <div class="mc-dist">📍 <span id="mosqueDist">—</span></div>
+                <div class="mc-addr" id="mosqueAddr">—</div>
+              </div>
+            </div>
+            <div class="mc-btns">
+              <a class="mc-btn" id="googleMapsBtn" href="#" target="_blank">
+                🗺️ خرائط جوجل
+              </a>
+              <a class="mc-btn" id="wazeBtn" href="#" target="_blank">
+                🧭 Waze
+              </a>
+              <a class="mc-btn mc-btn-ios" id="appleMapsBtn" href="#" target="_blank">
+                🍎 خرائط Apple
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /compass-section -->
+</div><!-- /page -->
+
+<script>
+/* ════════════════════════════
+   CONSTANTS
+════════════════════════════ */
+const KAABA_LAT = 21.4225;
+const KAABA_LNG = 39.8262;
+
+let userLat = null, userLng = null;
+let qiblaAngle = 0;      // درجة القبلة من الشمال
+let deviceHeading = 0;   // اتجاه الجهاز
+let watchId = null;
+let compassSupported = false;
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+/* ════════════════════════════
+   LOCATION
+════════════════════════════ */
+function requestLocation(){
+  document.getElementById('permCard').style.display = 'none';
+  document.getElementById('compassSection').classList.add('show');
+  setStatus('loading', 'جاري تحديد الموقع...');
+  buildTicks();
+
+  if(!navigator.geolocation){
+    setStatus('err','متصفحك لا يدعم تحديد الموقع');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => onLocation(pos),
+    err => onLocationErr(err),
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+}
+
+function onLocation(pos){
+  userLat = pos.coords.latitude;
+  userLng = pos.coords.longitude;
+  const acc = pos.coords.accuracy;
+
+  /* حساب اتجاه القبلة */
+  qiblaAngle = calcQibla(userLat, userLng);
+
+  /* تحديث UI */
+  document.getElementById('qiblaAngle').textContent = Math.round(qiblaAngle);
+  document.getElementById('qiblaDir').textContent   = angleToDirection(qiblaAngle);
+  document.getElementById('locCoords').textContent  =
+    `${userLat.toFixed(4)}°، ${userLng.toFixed(4)}°`;
+  document.getElementById('distMecca').textContent  =
+    formatDist(haversine(userLat, userLng, KAABA_LAT, KAABA_LNG));
+
+  /* دقة الموقع */
+  const pct = Math.min(100, Math.round(100 - (acc / 100) * 10));
+  document.getElementById('accuracyVal').textContent = `± ${Math.round(acc)} م`;
+  document.getElementById('accuracyFill').style.width = pct + '%';
+
+  /* تحديث سهم القبلة (بدون بوصلة) */
+  updateQiblaArrow();
+
+  setStatus('ok', `موقعك محدد · دقة ${Math.round(acc)} متر`);
+
+  /* تشغيل بوصلة الجهاز */
+  startCompass();
+}
+
+function onLocationErr(err){
+  const msgs = {1:'رُفض إذن الموقع',2:'تعذّر تحديد موقعك',3:'انتهت مهلة التحديد'};
+  setStatus('err', msgs[err.code]||'خطأ في تحديد الموقع');
+}
+
+/* ════════════════════════════
+   QIBLA CALCULATION
+════════════════════════════ */
+function calcQibla(lat, lng){
+  const φ1 = toRad(lat),  φ2 = toRad(KAABA_LAT);
+  const Δλ = toRad(KAABA_LNG - lng);
+  const y  = Math.sin(Δλ) * Math.cos(φ2);
+  const x  = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+  return (toDeg(Math.atan2(y, x)) + 360) % 360;
+}
+
+function haversine(lat1,lng1,lat2,lng2){
+  const R=6371;
+  const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
+  const a=Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function toRad(d){return d*Math.PI/180;}
+function toDeg(r){return r*180/Math.PI;}
+function formatDist(km){return km<1?`${Math.round(km*1000)} م`:`${km.toFixed(0)} كم`;}
+
+function angleToDirection(deg){
+  const dirs=['شمال','شمال شرق','شرق','جنوب شرق','جنوب','جنوب غرب','غرب','شمال غرب'];
+  return dirs[Math.round(deg/45)%8];
+}
+
+/* ════════════════════════════
+   COMPASS (Device Orientation)
+════════════════════════════ */
+function startCompass(){
+  if(isIOS && typeof DeviceOrientationEvent?.requestPermission === 'function'){
+    /* iOS 13+ needs permission */
+    DeviceOrientationEvent.requestPermission()
+      .then(state=>{
+        if(state==='granted') listenOrientation();
+        else showToast('⚠️ لم يتم منح إذن البوصلة على iOS');
+      }).catch(()=> showToast('⚠️ تعذّر تفعيل البوصلة'));
+  } else {
+    listenOrientation();
+  }
+}
+
+function listenOrientation(){
+  const handler = e => {
+    let heading = null;
+    if(e.webkitCompassHeading != null){
+      /* iOS: webkitCompassHeading = degrees from north, CW */
+      heading = e.webkitCompassHeading;
+    } else if(e.alpha != null){
+      /* Android: alpha = rotation around Z, CCW from north */
+      heading = (360 - e.alpha) % 360;
+    }
+    if(heading == null) return;
+
+    compassSupported = true;
+    deviceHeading = heading;
+    updateQiblaArrow();
+    updateNeedle();
+  };
+
+  window.addEventListener('deviceorientationabsolute', handler, true);
+  window.addEventListener('deviceorientation', handler, true);
+}
+
+function updateQiblaArrow(){
+  /* السهم يشير للقبلة مع مراعاة اتجاه الجهاز */
+  const rotation = qiblaAngle - deviceHeading;
+  document.getElementById('qiblaArrow').style.transform = `rotate(${rotation}deg)`;
+}
+
+function updateNeedle(){
+  /* الإبرة الحمرا تشير للشمال دايماً */
+  document.getElementById('needleWrap').style.transform = `rotate(${-deviceHeading}deg)`;
+}
+
+/* ════════════════════════════
+   TICK MARKS
+════════════════════════════ */
+function buildTicks(){
+  const container = document.getElementById('ticksContainer');
+  container.innerHTML = '';
+  for(let i=0;i<72;i++){
+    const tick = document.createElement('div');
+    tick.className = 'tick';
+    const isMajor = i%9===0;
+    const h = isMajor ? 12 : 6;
+    tick.style.cssText = `
+      height:${h}px;top:${isMajor?6:8}px;
+      opacity:${isMajor?.6:.3};
+      transform:rotate(${i*5}deg) translateX(-50%);
+    `;
+    container.appendChild(tick);
+  }
+}
+
+/* ════════════════════════════
+   NEAREST MOSQUE
+════════════════════════════ */
+async function findNearestMosque(){
+  if(!userLat){ showToast('⚠️ يجب تحديد موقعك أولاً'); return; }
+
+  const btn = document.getElementById('findMosqueBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ جاري البحث...';
+
+  document.getElementById('mosquePlaceholder').style.display = 'none';
+  document.getElementById('mosqueResult').classList.remove('show');
+  document.getElementById('mosqueLoading').classList.add('show');
+
+  try{
+    /* Overpass API — أسرع وأدق مصدر مفتوح للمساجد */
+    const radius = 3000; /* 3 كيلو */
+    const query = `
+      [out:json][timeout:10];
+      (
+        node["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${userLat},${userLng});
+        way["amenity"="place_of_worship"]["religion"="muslim"](around:${radius},${userLat},${userLng});
+      );
+      out center 10;
+    `;
+    const url = `https://overpass-api.de/api/interpreter?data=${encodeURIComponent(query)}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+
+    if(!data.elements || data.elements.length===0){
+      showToast('لم يُعثر على مساجد قريبة في نطاق 3 كم');
+      document.getElementById('mosquePlaceholder').style.display='block';
+      document.getElementById('mosquePlaceholder').innerHTML=`<div class="mp-icon">😔</div>لا توجد مساجد في قاعدة البيانات قريبة منك.<br>جرّب البحث اليدوي على الخرائط.`;
+    } else {
+      /* ابحث عن الأقرب */
+      const nearest = data.elements.map(el=>{
+        const lat = el.lat || el.center?.lat;
+        const lng = el.lon || el.center?.lon;
+        const dist = haversine(userLat, userLng, lat, lng);
+        return { ...el, lat, lng, dist };
+      }).sort((a,b)=>a.dist-b.dist)[0];
+
+      showMosque(nearest);
+    }
+  }catch(e){
+    showToast('⚠️ تعذّر البحث — تحقق من الاتصال');
+    document.getElementById('mosquePlaceholder').style.display='block';
+  }
+
+  document.getElementById('mosqueLoading').classList.remove('show');
+  btn.disabled = false;
+  btn.textContent = '🔍 ابحث مجدداً';
+}
+
+function showMosque(mosque){
+  const name = mosque.tags?.name || mosque.tags?.['name:ar'] || 'مسجد قريب';
+  const addr = [
+    mosque.tags?.['addr:street'],
+    mosque.tags?.['addr:city'] || mosque.tags?.['addr:suburb']
+  ].filter(Boolean).join('، ') || 'العنوان غير متاح';
+
+  document.getElementById('mosqueName').textContent = name;
+  document.getElementById('mosqueDist').textContent = formatDist(mosque.dist);
+  document.getElementById('mosqueAddr').textContent = addr;
+
+  /* روابط الخرائط */
+  const gmUrl  = `https://www.google.com/maps/dir/?api=1&destination=${mosque.lat},${mosque.lng}&travelmode=walking`;
+  const wazeUrl= `https://waze.com/ul?ll=${mosque.lat},${mosque.lng}&navigate=yes`;
+  const appleUrl=`http://maps.apple.com/?daddr=${mosque.lat},${mosque.lng}&dirflg=w`;
+
+  document.getElementById('googleMapsBtn').href = gmUrl;
+  document.getElementById('wazeBtn').href       = wazeUrl;
+  document.getElementById('appleMapsBtn').href  = appleUrl;
+
+  /* زرار Apple Maps — يظهر فقط على iOS */
+  const appleBtn = document.getElementById('appleMapsBtn');
+  appleBtn.classList.toggle('show', isIOS);
+
+  document.getElementById('mosqueResult').classList.add('show');
+}
+
+/* ════════════════════════════
+   STATUS / UI
+════════════════════════════ */
+function setStatus(type, msg){
+  const dot  = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  text.textContent = msg;
+  dot.className = 'status-dot';
+  if(type==='ok')  dot.classList.add('ok');
+  if(type==='err') dot.classList.add('err');
+}
+
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  localStorage.setItem('qTheme', document.body.classList.contains('light')?'light':'dark');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('header').classList.toggle('scrolled',scrollY>10);
+},{passive:true});
+
+/* ════════════════════════════
+   INIT
+════════════════════════════ */
+window.addEventListener('DOMContentLoaded',()=>{
+  if(localStorage.getItem('qTheme')==='light') document.body.classList.add('light');
+
+  /* لو الموقع محفوظ مسبقاً، اسأل مباشرة */
+  if(navigator.permissions){
+    navigator.permissions.query({name:'geolocation'}).then(p=>{
+      if(p.state==='granted') requestLocation();
+    });
+  }
+});
+</script>
+</body>
+</html>
