@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأسئلة الدينية</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0c1a12">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080f0a;--surf:#111d14;--surf2:#172218;--surf3:#1e2e20;
+  --bdr:rgba(196,160,60,.18);--bdr-h:rgba(196,160,60,.45);
+  --gold:#c4a03c;--gold-l:#e0bc5a;--gold-d:#8a6e26;--glow:rgba(196,160,60,.2);
+  --grn:#2a5c38;--grn-l:#3d7a50;
+  --tx:#f0e8d8;--tx2:#b8a890;--tx3:#7a6e5e;
+  --red:rgba(220,60,60,.85);--red-bg:rgba(220,60,60,.08);--red-bdr:rgba(220,60,60,.25);
+  --green:#4ade80;--green-bg:rgba(74,222,128,.08);--green-bdr:rgba(74,222,128,.25);
+  --ease:cubic-bezier(.4,0,.2,1);
+}
+body.light{
+  --bg:#f0e8d5;--surf:#fdf6e3;--surf2:#f5ecd5;--surf3:#ede3cc;
+  --bdr:rgba(120,90,20,.15);--bdr-h:rgba(120,90,20,.4);
+  --gold:#7a5a10;--gold-l:#9a7218;--gold-d:#c8a84a;--glow:rgba(122,90,16,.15);
+  --tx:#1a1005;--tx2:#5a4820;--tx3:#8a7a5a;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Naskh Arabic',serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;transition:background .4s,color .4s;}
+body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(60deg,transparent,transparent 38px,rgba(196,160,60,.016) 38px,rgba(196,160,60,.016) 39px),repeating-linear-gradient(-60deg,transparent,transparent 38px,rgba(196,160,60,.016) 38px,rgba(196,160,60,.016) 39px);pointer-events:none;z-index:0;}
+
+/* ══ HEADER ══ */
+.header{position:sticky;top:0;z-index:100;padding:0 20px;transition:all .3s;}
+.header.sc{background:rgba(8,15,10,.93);border-bottom:1px solid var(--bdr);backdrop-filter:blur(18px);}
+body.light .header.sc{background:rgba(240,232,213,.93);}
+.hinner{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:12px;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--tx2);font-size:.85rem;text-decoration:none;padding:7px 14px;border:1px solid var(--bdr);border-radius:28px;transition:all .2s;}
+.back-btn:hover{border-color:var(--bdr-h);color:var(--gold-l);}
+.h-title{font-family:'Amiri',serif;font-size:1.1rem;color:var(--gold-l);flex:1;text-align:center;}
+.hbtn{width:35px;height:35px;border-radius:50%;border:1px solid var(--bdr);background:var(--surf);color:var(--tx2);font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.hbtn:hover{border-color:var(--bdr-h);color:var(--gold);}
+
+/* ══ PAGE ══ */
+.page{max-width:760px;margin:0 auto;padding:24px 16px 80px;position:relative;z-index:1;}
+
+/* ══ NAME MODAL ══ */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.hide{display:none;}
+.modal{background:var(--surf);border:1px solid var(--bdr-h);border-radius:22px;padding:36px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:pop .35s var(--ease);}
+@keyframes pop{from{opacity:0;transform:scale(.92) translateY(16px);}to{opacity:1;transform:none;}}
+.modal-icon{font-size:2.8rem;margin-bottom:12px;}
+.modal-title{font-family:'Amiri',serif;font-size:1.7rem;color:var(--gold-l);margin-bottom:8px;}
+.modal-sub{font-size:.88rem;color:var(--tx3);line-height:1.75;margin-bottom:24px;}
+.modal-input{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:11px;padding:12px 16px;color:var(--tx);font-family:'Noto Naskh Arabic',serif;font-size:1rem;text-align:center;transition:border .2s;margin-bottom:14px;}
+.modal-input:focus{outline:none;border-color:var(--bdr-h);}
+.modal-input::placeholder{color:var(--tx3);}
+.modal-btn{width:100%;padding:13px;border-radius:11px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0c1008;font-family:'Noto Naskh Arabic',serif;font-weight:700;font-size:1rem;transition:all .2s;box-shadow:0 4px 16px var(--glow);}
+.modal-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--glow);}
+.modal-note{font-size:.75rem;color:var(--tx3);margin-top:10px;line-height:1.6;}
+
+/* ══ USER BAR ══ */
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:var(--surf);border:1px solid var(--bdr);border-radius:14px;padding:11px 16px;margin-bottom:20px;gap:10px;}
+.user-info{display:flex;align-items:center;gap:9px;}
+.user-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#0c1008;font-weight:700;flex-shrink:0;}
+.user-name{font-size:.9rem;color:var(--tx);font-weight:600;}
+.user-sub{font-size:.72rem;color:var(--tx3);}
+.change-name-btn{font-size:.75rem;color:var(--tx3);background:none;border:1px solid var(--bdr);border-radius:18px;padding:5px 12px;cursor:pointer;transition:all .2s;font-family:'Noto Naskh Arabic',serif;}
+.change-name-btn:hover{border-color:var(--bdr-h);color:var(--gold);}
+
+/* ══ ASK FORM ══ */
+.ask-card{background:var(--surf);border:1px solid var(--bdr);border-radius:18px;padding:22px;margin-bottom:24px;position:relative;overflow:hidden;}
+.ask-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.ask-label{font-family:'Amiri',serif;font-size:1.1rem;color:var(--gold-l);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.ask-textarea{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:11px;padding:12px 14px;color:var(--tx);font-family:'Noto Naskh Arabic',serif;font-size:.95rem;line-height:1.75;resize:vertical;min-height:90px;transition:border .2s;}
+.ask-textarea:focus{outline:none;border-color:var(--bdr-h);}
+.ask-textarea::placeholder{color:var(--tx3);}
+.ask-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:10px;}
+.ask-chars{font-size:.72rem;color:var(--tx3);}
+.ask-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0c1008;font-family:'Noto Naskh Arabic',serif;font-weight:700;font-size:.9rem;transition:all .2s;box-shadow:0 3px 12px var(--glow);}
+.ask-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px var(--glow);}
+.ask-btn:disabled{opacity:.5;cursor:default;transform:none;}
+
+/* ══ FILTERS ══ */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--bdr);background:var(--surf);color:var(--tx2);font-family:'Noto Naskh Arabic',serif;font-size:.82rem;cursor:pointer;transition:all .2s;}
+.filter-btn:hover{border-color:var(--bdr-h);color:var(--gold-l);}
+.filter-btn.active{background:rgba(196,160,60,.1);border-color:var(--bdr-h);color:var(--gold-l);}
+.questions-count{font-size:.8rem;color:var(--tx3);margin-right:auto;align-self:center;}
+
+/* ══ QUESTION CARD ══ */
+.q-list{display:flex;flex-direction:column;gap:14px;}
+.q-card{background:var(--surf);border:1px solid var(--bdr);border-radius:18px;overflow:hidden;transition:all .2s;animation:fdIn .4s var(--ease);}
+@keyframes fdIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.q-card:hover{border-color:var(--bdr-h);}
+
+.q-head{padding:16px 18px;display:flex;align-items:flex-start;gap:12px;}
+.q-status{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:700;margin-top:2px;
+  border:2px solid;transition:all .3s;
+}
+.q-status.answered{background:var(--green-bg);border-color:var(--green-bdr);color:var(--green);}
+.q-status.unanswered{background:var(--red-bg);border-color:var(--red-bdr);color:var(--red);}
+
+.q-body{flex:1;min-width:0;}
+.q-text{font-size:1rem;color:var(--tx);line-height:1.75;margin-bottom:8px;word-break:break-word;}
+.q-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;}
+.q-author{font-size:.75rem;color:var(--tx3);display:flex;align-items:center;gap:5px;}
+.q-author-dot{width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,var(--gold-d),var(--gold));display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#0c1008;font-weight:700;flex-shrink:0;}
+.q-time{font-size:.7rem;color:var(--tx3);}
+.q-mine-badge{font-size:.65rem;padding:2px 8px;border-radius:8px;background:rgba(196,160,60,.1);color:var(--gold);border:1px solid var(--bdr);}
+
+.q-foot{
+  padding:10px 18px;border-top:1px solid var(--bdr);
+  display:flex;align-items:center;gap:10px;
+  background:rgba(0,0,0,.1);
+}
+body.light .q-foot{background:rgba(0,0,0,.03);}
+.q-replies-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:9px;
+  border:1px solid var(--bdr);background:transparent;
+  color:var(--tx2);font-family:'Noto Naskh Arabic',serif;
+  font-size:.8rem;cursor:pointer;transition:all .2s;
+}
+.q-replies-btn:hover{border-color:var(--bdr-h);color:var(--gold-l);}
+.q-replies-btn.active{background:rgba(196,160,60,.08);border-color:var(--bdr-h);color:var(--gold-l);}
+.replies-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:20px;height:20px;border-radius:10px;
+  background:var(--gold);color:#0c1008;font-size:.65rem;font-weight:700;padding:0 5px;
+}
+.replies-count.zero{background:var(--surf3);color:var(--tx3);}
+.q-delete-btn{margin-right:auto;font-size:.72rem;color:var(--tx3);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:all .2s;font-family:'Noto Naskh Arabic',serif;}
+.q-delete-btn:hover{color:#f87171;background:rgba(248,113,113,.08);}
+
+/* ══ REPLIES SECTION ══ */
+.replies-wrap{display:none;border-top:1px solid var(--bdr);background:var(--surf2);}
+.replies-wrap.open{display:block;animation:fdIn .3s var(--ease);}
+.replies-inner{padding:14px 18px 14px 18px;}
+.reply-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+
+.reply-item{display:flex;gap:9px;align-items:flex-start;}
+.reply-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--grn),var(--grn-l));display:flex;align-items:center;justify-content:center;font-size:.7rem;color:white;font-weight:700;flex-shrink:0;margin-top:2px;}
+.reply-bubble{flex:1;background:var(--surf3);border:1px solid var(--bdr);border-radius:12px;padding:10px 13px;}
+.reply-author{font-size:.7rem;color:var(--gold);font-weight:600;margin-bottom:4px;}
+.reply-text{font-size:.88rem;color:var(--tx);line-height:1.7;word-break:break-word;}
+.reply-time{font-size:.65rem;color:var(--tx3);margin-top:4px;}
+.reply-delete{background:none;border:none;color:var(--tx3);font-size:.65rem;cursor:pointer;padding:2px 6px;border-radius:5px;transition:all .2s;font-family:'Noto Naskh Arabic',serif;float:left;}
+.reply-delete:hover{color:#f87171;}
+
+.reply-form{display:flex;gap:8px;align-items:flex-end;}
+.reply-input{flex:1;background:var(--surf);border:1px solid var(--bdr);border-radius:10px;padding:9px 12px;color:var(--tx);font-family:'Noto Naskh Arabic',serif;font-size:.88rem;resize:none;min-height:40px;max-height:100px;transition:border .2s;line-height:1.6;}
+.reply-input:focus{outline:none;border-color:var(--bdr-h);}
+.reply-input::placeholder{color:var(--tx3);}
+.reply-send-btn{width:38px;height:38px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,var(--gold-d),var(--gold));color:#0c1008;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.reply-send-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px var(--glow);}
+.reply-send-btn:disabled{opacity:.5;cursor:default;transform:none;}
+
+/* ══ EMPTY / LOADER ══ */
+.empty{text-align:center;padding:48px 20px;color:var(--tx3);}
+.empty-icon{font-size:3rem;margin-bottom:12px;opacity:.5;}
+.empty-title{font-family:'Amiri',serif;font-size:1.3rem;color:var(--tx2);margin-bottom:6px;}
+.empty-sub{font-size:.85rem;line-height:1.7;}
+.loader-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px;gap:14px;}
+.spinner{width:40px;height:40px;border:3px solid var(--bdr);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--surf3);border:1px solid var(--bdr-h);color:var(--gold-l);padding:11px 22px;border-radius:28px;font-size:.88rem;font-weight:600;z-index:9999;transition:transform .3s var(--ease);box-shadow:0 8px 22px rgba(0,0,0,.4);white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ══ STATUS LEGEND ══ */
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;}
+.leg{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--tx3);}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.leg-dot.g{background:var(--green);}
+.leg-dot.r{background:var(--red);}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:500px){
+  .page{padding:16px 12px 70px;}
+  .q-head{padding:13px 14px;gap:9px;}
+  .q-foot{padding:8px 14px;}
+  .replies-inner{padding:12px 14px;}
+  .ask-card{padding:16px;}
+  .filters{gap:6px;}
+  .filter-btn{font-size:.76rem;padding:6px 12px;}
+}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
+::selection{background:rgba(196,160,60,.25);}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- NAME MODAL -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal">
+    <div class="modal-icon">🕌</div>
+    <div class="modal-title">أهلاً بك</div>
+    <div class="modal-sub">اكتب اسماً مستعاراً للمشاركة في الأسئلة والردود — لا يوجد تسجيل أو باسورد</div>
+    <input class="modal-input" id="nameInput" type="text" placeholder="مثال: أبو عمر، أخت مسلمة..." maxlength="30">
+    <button class="modal-btn" onclick="saveName()">دخول ← </button>
+    <div class="modal-note">🔒 لا نحفظ أي بيانات شخصية — الاسم للعرض فقط</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="hinner">
+    <a href="index.html" class="back-btn">⬅ الرئيسية</a>
+    <span class="h-title">💬 الأسئلة الدينية</span>
+    <button class="hbtn" onclick="toggleTheme()">🌓</button>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- USER BAR -->
+  <div class="user-bar" id="userBar" style="display:none;">
+    <div class="user-info">
+      <div class="user-avatar" id="userAvatar">؟</div>
+      <div>
+        <div class="user-name" id="userNameDisplay">—</div>
+        <div class="user-sub">مشارك في النقاش</div>
+      </div>
+    </div>
+    <button class="change-name-btn" onclick="changeName()">✏️ تغيير الاسم</button>
+  </div>
+
+  <!-- ASK FORM -->
+  <div class="ask-card" id="askCard" style="display:none;">
+    <div class="ask-label">✍️ اطرح سؤالك الديني</div>
+    <textarea class="ask-textarea" id="askTextarea" placeholder="اكتب سؤالك هنا... مثال: ما حكم صلاة الجمعة للمسافر؟" maxlength="500" oninput="updateChars()"></textarea>
+    <div class="ask-footer">
+      <span class="ask-chars" id="askChars">0 / 500</span>
+      <button class="ask-btn" id="askBtn" onclick="submitQuestion()">📤 إرسال السؤال</button>
+    </div>
+  </div>
+
+  <!-- FILTERS + LEGEND -->
+  <div id="mainContent" style="display:none;">
+    <div class="legend">
+      <div class="leg"><div class="leg-dot g"></div> تم الإجابة</div>
+      <div class="leg"><div class="leg-dot r"></div> لم يُجَب بعد</div>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="setFilter('all',this)">📋 الكل</button>
+      <button class="filter-btn" onclick="setFilter('answered',this)">✅ مُجاب</button>
+      <button class="filter-btn" onclick="setFilter('unanswered',this)">❓ غير مُجاب</button>
+      <button class="filter-btn" onclick="setFilter('mine',this)">👤 أسئلتي</button>
+      <span class="questions-count" id="qCount"></span>
+    </div>
+    <div class="q-list" id="qList"></div>
+  </div>
+
+  <!-- LOADER -->
+  <div class="loader-wrap" id="loaderWrap">
+    <div class="spinner"></div>
+    <span style="font-size:.85rem;color:var(--tx3);">جاري الاتصال...</span>
+  </div>
+
+</div><!-- /page -->
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp }            from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged }
+                                    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, deleteDoc, doc,
+  onSnapshot, query, orderBy, serverTimestamp,
+  updateDoc, increment, getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* ══ CONFIG ══ */
+const firebaseConfig = {
+  apiKey:            "AIzaSyDd60k9tk6MOtyIbC6VoZbjG8Ny5AFbuo4",
+  authDomain:        "eslam-b3994.firebaseapp.com",
+  projectId:         "eslam-b3994",
+  storageBucket:     "eslam-b3994.firebasestorage.app",
+  messagingSenderId: "251677169117",
+  appId:             "1:251677169117:web:b49083ae14519ebd091234"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+/* ══ STATE ══ */
+let currentUser  = null;
+let userName     = localStorage.getItem('qaUserName') || null;
+let currentFilter= 'all';
+let allQuestions = [];
+let unsubReplies = {}; // listeners للردود
+
+/* ══ AUTH ══ */
+signInAnonymously(auth).catch(e => showToast('⚠️ خطأ في الاتصال: ' + e.message));
+
+onAuthStateChanged(auth, user => {
+  if(user){
+    currentUser = user;
+    if(userName) onReady();
+    else         showModal();
+  }
+});
+
+/* ══ READY ══ */
+function onReady(){
+  document.getElementById('loaderWrap').style.display = 'none';
+  document.getElementById('userBar').style.display    = 'flex';
+  document.getElementById('askCard').style.display    = 'block';
+  document.getElementById('mainContent').style.display= 'block';
+  document.getElementById('modalBg').classList.add('hide');
+  updateUserBar();
+  listenQuestions();
+}
+
+function updateUserBar(){
+  const n = userName || '؟';
+  document.getElementById('userAvatar').textContent      = n.charAt(0);
+  document.getElementById('userNameDisplay').textContent = n;
+}
+
+/* ══ MODAL ══ */
+function showModal(){
+  document.getElementById('loaderWrap').style.display = 'none';
+  document.getElementById('modalBg').classList.remove('hide');
+  setTimeout(()=>document.getElementById('nameInput').focus(), 300);
+}
+window.saveName = function(){
+  const v = document.getElementById('nameInput').value.trim();
+  if(!v || v.length < 2){ showToast('⚠️ اكتب اسماً لا يقل عن حرفين'); return; }
+  userName = v;
+  localStorage.setItem('qaUserName', v);
+  onReady();
+};
+window.changeName = function(){
+  document.getElementById('nameInput').value = userName || '';
+  document.getElementById('modalBg').classList.remove('hide');
+};
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') window.saveName();
+});
+
+/* ══ QUESTIONS LISTENER ══ */
+function listenQuestions(){
+  const q = query(collection(db,'questions'), orderBy('createdAt','desc'));
+  onSnapshot(q, snap => {
+    allQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderQuestions();
+  });
+}
+
+/* ══ RENDER ══ */
+function renderQuestions(){
+  let list = [...allQuestions];
+  if(currentFilter === 'answered')   list = list.filter(q => q.repliesCount > 0);
+  if(currentFilter === 'unanswered') list = list.filter(q => !q.repliesCount || q.repliesCount === 0);
+  if(currentFilter === 'mine')       list = list.filter(q => q.uid === currentUser?.uid);
+
+  document.getElementById('qCount').textContent = `${list.length} سؤال`;
+
+  const el = document.getElementById('qList');
+  if(list.length === 0){
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🤔</div><div class="empty-title">لا توجد أسئلة هنا</div><div class="empty-sub">كن أول من يطرح سؤالاً!</div></div>`;
+    return;
+  }
+  el.innerHTML = list.map(q => renderQCard(q)).join('');
+
+  /* re-open any open reply sections */
+  Object.keys(unsubReplies).forEach(qid => {
+    const wrap = document.getElementById('replies-' + qid);
+    if(wrap && wrap.classList.contains('open')) listenReplies(qid);
+  });
+}
+
+function renderQCard(q){
+  const isAnswered = q.repliesCount > 0;
+  const isMine     = q.uid === currentUser?.uid;
+  const timeStr    = q.createdAt?.toDate ? timeAgo(q.createdAt.toDate()) : 'الآن';
+  return `
+  <div class="q-card" id="qcard-${q.id}">
+    <div class="q-head">
+      <div class="q-status ${isAnswered?'answered':'unanswered'}" title="${isAnswered?'تم الإجابة':'لم يُجَب بعد'}">
+        ${isAnswered ? '✓' : '!'}
+      </div>
+      <div class="q-body">
+        <div class="q-text">${escHtml(q.text)}</div>
+        <div class="q-meta">
+          <span class="q-author">
+            <div class="q-author-dot">${(q.authorName||'؟').charAt(0)}</div>
+            ${escHtml(q.authorName||'مجهول')}
+          </span>
+          <span class="q-time">${timeStr}</span>
+          ${isMine ? '<span class="q-mine-badge">سؤالي</span>' : ''}
+        </div>
+      </div>
+    </div>
+    <div class="q-foot">
+      <button class="q-replies-btn" id="replybtn-${q.id}" onclick="toggleReplies('${q.id}')">
+        💬 الردود
+        <span class="replies-count ${(!q.repliesCount||q.repliesCount===0)?'zero':''}">${q.repliesCount||0}</span>
+      </button>
+      ${isMine ? `<button class="q-delete-btn" onclick="deleteQuestion('${q.id}')">🗑️ حذف</button>` : ''}
+    </div>
+    <div class="replies-wrap" id="replies-${q.id}">
+      <div class="replies-inner">
+        <div class="reply-list" id="rlist-${q.id}">
+          <div style="text-align:center;padding:12px;color:var(--tx3);font-size:.82rem;">جاري تحميل الردود...</div>
+        </div>
+        <div class="reply-form">
+          <textarea class="reply-input" id="rinput-${q.id}" placeholder="اكتب ردك هنا..." rows="1" maxlength="300"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply('${q.id}')}"></textarea>
+          <button class="reply-send-btn" id="rsend-${q.id}" onclick="sendReply('${q.id}')">↑</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ══ TOGGLE REPLIES ══ */
+window.toggleReplies = function(qid){
+  const wrap = document.getElementById('replies-' + qid);
+  const btn  = document.getElementById('replybtn-' + qid);
+  const isOpen = wrap.classList.contains('open');
+  wrap.classList.toggle('open', !isOpen);
+  btn.classList.toggle('active', !isOpen);
+  if(!isOpen) listenReplies(qid);
+  else {
+    if(unsubReplies[qid]){ unsubReplies[qid](); delete unsubReplies[qid]; }
+  }
+};
+
+/* ══ REPLIES LISTENER ══ */
+function listenReplies(qid){
+  if(unsubReplies[qid]) unsubReplies[qid]();
+  const q = query(collection(db, 'questions', qid, 'replies'), orderBy('createdAt','asc'));
+  unsubReplies[qid] = onSnapshot(q, snap => {
+    const rlist = document.getElementById('rlist-' + qid);
+    if(!rlist) return;
+    if(snap.empty){
+      rlist.innerHTML = `<div style="text-align:center;padding:10px;color:var(--tx3);font-size:.82rem;">لا توجد ردود بعد — كن أول من يرد!</div>`;
+      return;
+    }
+    rlist.innerHTML = snap.docs.map(d => {
+      const r = d.data();
+      const isMineR = r.uid === currentUser?.uid;
+      return `
+      <div class="reply-item">
+        <div class="reply-avatar">${(r.authorName||'؟').charAt(0)}</div>
+        <div class="reply-bubble">
+          <div class="reply-author">${escHtml(r.authorName||'مجهول')}
+            ${isMineR ? `<button class="reply-delete" onclick="deleteReply('${qid}','${d.id}')">✕</button>` : ''}
+          </div>
+          <div class="reply-text">${escHtml(r.text)}</div>
+          <div class="reply-time">${r.createdAt?.toDate ? timeAgo(r.createdAt.toDate()) : 'الآن'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+}
+
+/* ══ SUBMIT QUESTION ══ */
+window.submitQuestion = async function(){
+  const txt = document.getElementById('askTextarea').value.trim();
+  if(!txt || txt.length < 5){ showToast('⚠️ السؤال قصير جداً'); return; }
+  if(!currentUser){ showToast('⚠️ انتظر الاتصال...'); return; }
+  const btn = document.getElementById('askBtn');
+  btn.disabled = true; btn.textContent = '⏳ جاري الإرسال...';
+  try{
+    await addDoc(collection(db,'questions'),{
+      text: txt, authorName: userName,
+      uid: currentUser.uid, repliesCount: 0,
+      createdAt: serverTimestamp()
+    });
+    document.getElementById('askTextarea').value = '';
+    document.getElementById('askChars').textContent = '0 / 500';
+    showToast('✅ تم إرسال سؤالك!');
+  }catch(e){ showToast('❌ فشل الإرسال: ' + e.message); }
+  btn.disabled = false; btn.textContent = '📤 إرسال السؤال';
+};
+
+/* ══ SEND REPLY ══ */
+window.sendReply = async function(qid){
+  const inp = document.getElementById('rinput-' + qid);
+  const txt = inp.value.trim();
+  if(!txt){ showToast('⚠️ اكتب رداً أولاً'); return; }
+  const btn = document.getElementById('rsend-' + qid);
+  btn.disabled = true;
+  try{
+    await addDoc(collection(db,'questions',qid,'replies'),{
+      text: txt, authorName: userName,
+      uid: currentUser.uid, createdAt: serverTimestamp()
+    });
+    await updateDoc(doc(db,'questions',qid),{ repliesCount: increment(1) });
+    inp.value = '';
+  }catch(e){ showToast('❌ فشل الرد: ' + e.message); }
+  btn.disabled = false;
+};
+
+/* ══ DELETE QUESTION ══ */
+window.deleteQuestion = async function(qid){
+  if(!confirm('هل تريد حذف هذا السؤال؟')) return;
+  try{
+    await deleteDoc(doc(db,'questions',qid));
+    showToast('🗑️ تم الحذف');
+  }catch(e){ showToast('❌ فشل الحذف'); }
+};
+
+/* ══ DELETE REPLY ══ */
+window.deleteReply = async function(qid, rid){
+  try{
+    await deleteDoc(doc(db,'questions',qid,'replies',rid));
+    await updateDoc(doc(db,'questions',qid),{ repliesCount: increment(-1) });
+  }catch(e){ showToast('❌ فشل الحذف'); }
+};
+
+/* ══ FILTER ══ */
+window.setFilter = function(f, btn){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderQuestions();
+};
+
+/* ══ HELPERS ══ */
+window.updateChars = function(){
+  const v = document.getElementById('askTextarea').value.length;
+  document.getElementById('askChars').textContent = v + ' / 500';
+};
+
+function timeAgo(date){
+  const s = Math.floor((Date.now() - date) / 1000);
+  if(s < 60)   return 'الآن';
+  if(s < 3600) return Math.floor(s/60) + ' دقيقة';
+  if(s < 86400)return Math.floor(s/3600) + ' ساعة';
+  return Math.floor(s/86400) + ' يوم';
+}
+
+function escHtml(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+window.toggleTheme = function(){
+  document.body.classList.toggle('light');
+  localStorage.setItem('qTheme', document.body.classList.contains('light')?'light':'dark');
+};
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('header').classList.toggle('sc',scrollY>10);
+},{passive:true});
+
+window.addEventListener('DOMContentLoaded',()=>{
+  if(localStorage.getItem('qTheme')==='light') document.body.classList.add('light');
+});
+
+</script>
+</body>
+</html>
