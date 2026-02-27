@@ -353,11 +353,25 @@ document.getElementById('nameInput').addEventListener('keydown', e => {
 
 /* ══ QUESTIONS LISTENER ══ */
 function listenQuestions(){
-  const q = query(collection(db,'questions'), orderBy('createdAt','desc'));
-  onSnapshot(q, snap => {
-    allQuestions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderQuestions();
-  });
+  /* نستمع بدون orderBy أول عشان نتجنب مشكلة الـ index */
+  onSnapshot(collection(db,'questions'),
+    snap => {
+      allQuestions = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        /* نرتب على العميل — أأمن وأسرع للبدء */
+        .filter(q => q.text) /* تجاهل أي document ناقص */
+        .sort((a,b)=>{
+          const ta = a.createdAt?.toMillis?.() || a.clientTime || 0;
+          const tb = b.createdAt?.toMillis?.() || b.clientTime || 0;
+          return tb - ta;
+        });
+      renderQuestions();
+    },
+    err => {
+      console.error('Firestore error:', err.code, err.message);
+      showToast('❌ تأكد من إعدادات Firestore Rules');
+    }
+  );
 }
 
 /* ══ RENDER ══ */
@@ -478,9 +492,12 @@ window.submitQuestion = async function(){
   btn.disabled = true; btn.textContent = '⏳ جاري الإرسال...';
   try{
     await addDoc(collection(db,'questions'),{
-      text: txt, authorName: userName,
-      uid: currentUser.uid, repliesCount: 0,
-      createdAt: serverTimestamp()
+      text: txt,
+      authorName: userName,
+      uid: currentUser.uid,
+      repliesCount: 0,
+      createdAt: serverTimestamp(),
+      clientTime: Date.now()   /* backup للترتيب */
     });
     document.getElementById('askTextarea').value = '';
     document.getElementById('askChars').textContent = '0 / 500';
