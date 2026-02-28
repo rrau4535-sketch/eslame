@@ -3,7 +3,7 @@
    GitHub Pages: /eslame/
    ============================================= */
 
-const CACHE_NAME = 'islamic-encyclopedia-v6';
+const CACHE_NAME = 'islamic-encyclopedia-v7';
 const BASE = '/eslame';
 
 /* ── الملفات المحلية ── */
@@ -16,6 +16,7 @@ const STATIC_ASSETS = [
   BASE + '/ahads.html',
   BASE + '/cbha.html',
   BASE + '/qibla.html',
+  BASE + '/qapage.html',
   BASE + '/manifest.json',
   BASE + '/sw.js'
 ];
@@ -61,8 +62,21 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
 
-  /* تجاهل analytics وسوشيال ميديا */
-  if (['google-analytics.com','tiktok.com','wa.me','facebook.com'].some(d => url.hostname.includes(d))) return;
+  /* تجاهل Firebase و analytics و external APIs تماماً */
+  const SKIP_DOMAINS = [
+    'firestore.googleapis.com',
+    'firebase.googleapis.com', 
+    'firebaseio.com',
+    'googleapis.com',
+    'gstatic.com/firebasejs',
+    'identitytoolkit.googleapis.com',
+    'securetoken.googleapis.com',
+    'google-analytics.com',
+    'tiktok.com','wa.me','facebook.com',
+    'overpass-api.de',
+    'cdn.jsdelivr.net'
+  ];
+  if (SKIP_DOMAINS.some(d => url.hostname.includes(d) || request.url.includes(d))) return;
 
   /* API القرآن — Network first (محتاج نت دايماً للآيات) */
   if (url.hostname === 'api.alquran.cloud' || url.hostname === 'cdn.islamic.network') {
