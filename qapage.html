@@ -357,12 +357,14 @@ function listenQuestions(){
   onSnapshot(collection(db,'questions'),
     snap => {
       allQuestions = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        /* نرتب على العميل — أأمن وأسرع للبدء */
-        .filter(q => q.text) /* تجاهل أي document ناقص */
+        .map(d => {
+          const data = d.data({ serverTimestamps: 'estimate' }); // ← يحسب timestamp مؤقت فوراً
+          return { id: d.id, ...data };
+        })
+        .filter(q => q.text)
         .sort((a,b)=>{
-          const ta = a.createdAt?.toMillis?.() || a.clientTime || 0;
-          const tb = b.createdAt?.toMillis?.() || b.clientTime || 0;
+          const ta = a.createdAt?.toMillis?.() || a.clientTime || Date.now();
+          const tb = b.createdAt?.toMillis?.() || b.clientTime || Date.now();
           return tb - ta;
         });
       renderQuestions();
@@ -400,7 +402,7 @@ function renderQuestions(){
 function renderQCard(q){
   const isAnswered = q.repliesCount > 0;
   const isMine     = q.uid === currentUser?.uid;
-  const timeStr    = q.createdAt?.toDate ? timeAgo(q.createdAt.toDate()) : 'الآن';
+  const timeStr    = q.createdAt?.toDate ? timeAgo(q.createdAt.toDate()) : q.createdAt?.seconds ? timeAgo(new Date(q.createdAt.seconds*1000)) : 'الآن';
   return `
   <div class="q-card" id="qcard-${q.id}">
     <div class="q-head">
