@@ -1062,13 +1062,38 @@ function showDeskLoader(msg){
 }
 function hideDeskLoader(){ document.getElementById('loader').classList.remove('show'); }
 
-function switchTab(tab, btn, silent){
+async function switchTab(tab, btn, silent){
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
   else document.querySelectorAll('.tab-btn')[tab==='quran'?0:1]?.classList.add('active');
   document.getElementById('quranText').style.display = tab==='quran'?'block':'none';
   document.getElementById('tafseerText').classList.toggle('show', tab==='tafseer');
+
+  /* ── Lazy load التفسير لو مش موجود ── */
+  if(tab === 'tafseer' && currentSurah){
+    const cached = surahCache[currentSurah];
+    if(!cached?.tafseer || cached.tafseer.length === 0){
+      const tfEl = document.getElementById('tafseerText');
+      tfEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--tx3);">⏳ جاري تحميل التفسير...</div>';
+      try{
+        const res  = await fetch('https://api.alquran.cloud/v1/surah/' + currentSurah + '/ar.muyassar');
+        const data = (await res.json()).data;
+        if(data?.ayahs){
+          /* احفظ في الكاش */
+          if(surahCache[currentSurah]) surahCache[currentSurah].tafseer = data.ayahs;
+          const ayahs = surahCache[currentSurah]?.ayahs || [];
+          tfEl.innerHTML = data.ayahs.map((a,i)=>
+            '<div class="ta"><div class="ta-ar"><span class="ta-n">' + toAr(a.numberInSurah) + '</span>' +
+            (ayahs[i]?.text||'') + '</div><div class="ta-tf">' + a.text + '</div></div>'
+          ).join('');
+        }
+      }catch(e){
+        document.getElementById('tafseerText').innerHTML =
+          '<div style="text-align:center;padding:24px;color:var(--tx3);">⚠️ تعذّر تحميل التفسير — تحقق من الاتصال</div>';
+      }
+    }
+  }
 }
 
 function changeFont(d){
