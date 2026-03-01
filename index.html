@@ -33,6 +33,54 @@
   --tx3:     #7a6e5e;
   --ease:    cubic-bezier(.4,0,.2,1);
 }
+
+/* Professional Focus Outline Removal with Accessibility */
+*, *::before, *::after {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Custom focus indicators using box-shadow for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--glow), 0 0 0 1px var(--gold-l) !important;
+  border-radius: inherit;
+}
+
+/* Remove default browser outlines */
+:focus {
+  outline: none !important;
+}
+
+/* Webkit specific */
+::-webkit-focus-ring-color {
+  color: transparent !important;
+}
+
+/* Firefox specific */
+:-moz-focusring {
+  outline: none !important;
+}
+
+/* For elements that need to show they're focused without outline */
+.nl:focus,
+.bti:focus,
+.burger:focus,
+.btn-p:focus,
+.btn-s:focus,
+.fc:focus,
+.qc:focus,
+.sp:focus,
+.fab:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px var(--glow) !important;
+}
+
 body.light {
   --bg:#f4efe4; --bg2:#ede7d8; --surf:#fdf9f2; --surf2:#f4ede0; --surf3:#ede5d4;
   --bdr:rgba(100,70,10,.14); --bdr-h:rgba(100,70,10,.4);
