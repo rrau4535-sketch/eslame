@@ -1,892 +1,635 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>موسوعة الأذكار | Azkar App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #1a237e;
-            --primary-light: #283593;
-            --gold: #d4a74c;
-            --gold-light: #f4d03f;
-            --bg-light: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-dark: #2c3e50;
-            --text-muted: #7f8c8d;
-            --success: #27ae60;
-            --shadow: 0 10px 40px rgba(0,0,0,0.1);
-            --shadow-hover: 0 15px 50px rgba(0,0,0,0.15);
-            --radius: 20px;
-        }
-
-        [data-theme="dark"] {
-            --bg-light: #1a1a2e;
-            --card-bg: #16213e;
-            --text-dark: #eaeaea;
-            --text-muted: #a0a0a0;
-            --shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(135deg, var(--bg-light) 0%, #e8eaf6 100%);
-            min-height: 100vh;
-            color: var(--text-dark);
-            transition: all 0.3s ease;
-            overflow-x: hidden;
-        }
-
-        /* Header Section */
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            padding: 30px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 5px 30px rgba(26, 35, 126, 0.3);
-        }
-
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(212, 167, 76, 0.1) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
-
-        .header-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            color: var(--gold);
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .header p {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
-        }
-
-        /* Controls Bar */
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            max-width: 800px;
-            margin: 0 auto;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .back-btn {
-            background: var(--card-bg);
-            color: var(--primary);
-            border: 2px solid var(--primary);
-            padding: 12px 25px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .back-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateX(-5px);
-        }
-
-        .theme-toggle {
-            background: var(--card-bg);
-            border: none;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.3rem;
-            color: var(--primary);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            transform: rotate(180deg);
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Category Selector */
-        .category-section {
-            max-width: 800px;
-            margin: 0 auto 30px;
-            padding: 0 20px;
-        }
-
-        .category-selector {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .category-selector:focus-within {
-            border-color: var(--gold);
-        }
-
-        .selector-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        .selector-label i {
-            color: var(--gold);
-        }
-
-        select {
-            width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            background: var(--bg-light);
-            color: var(--text-dark);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%231a237e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: left 15px center;
-            background-size: 20px;
-        }
-
-        select:focus {
-            outline: none;
-            border-color: var(--gold);
-            box-shadow: 0 0 0 4px rgba(212, 167, 76, 0.1);
-        }
-
-        /* Progress Section */
-        .progress-section {
-            max-width: 800px;
-            margin: 0 auto 30px;
-            padding: 0 20px;
-        }
-
-        .progress-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            padding: 25px;
-            box-shadow: var(--shadow);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-right: 5px solid var(--gold);
-        }
-
-        .progress-icon {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .progress-info {
-            flex: 1;
-        }
-
-        .progress-info h3 {
-            color: var(--primary);
-            margin-bottom: 8px;
-            font-size: 1.1rem;
-        }
-
-        .progress-bar {
-            height: 10px;
-            background: #e0e0e0;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 8px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
-            border-radius: 5px;
-            transition: width 0.5s ease;
-            width: 0%;
-        }
-
-        .progress-text {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        /* Azkar Container */
-        .azkar-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 20px 50px;
-        }
-
-        /* Zikr Card */
-        .zikr-card {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            margin-bottom: 25px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border-right: 6px solid var(--gold);
-            position: relative;
-        }
-
-        .zikr-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
-        }
-
-        .zikr-card.completed {
-            border-right-color: var(--success);
-            opacity: 0.85;
-        }
-
-        .zikr-card.completed .zikr-content {
-            opacity: 0.7;
-        }
-
-        .zikr-header {
-            background: linear-gradient(135deg, rgba(26, 35, 126, 0.05) 0%, rgba(212, 167, 76, 0.05) 100%);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .zikr-number {
-            background: var(--primary);
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-        }
-
-        .zikr-card.completed .zikr-number {
-            background: var(--success);
-        }
-
-        .zikr-badge {
-            background: rgba(212, 167, 76, 0.1);
-            color: var(--gold);
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .zikr-content {
-            padding: 30px;
-            font-family: 'Amiri', serif;
-            font-size: clamp(1.3rem, 3vw, 1.8rem);
-            line-height: 2;
-            text-align: center;
-            color: var(--text-dark);
-            position: relative;
-        }
-
-        .zikr-content::before,
-        .zikr-content::after {
-            content: '"';
-            position: absolute;
-            font-size: 4rem;
-            color: var(--gold);
-            opacity: 0.2;
-            font-family: serif;
-        }
-
-        .zikr-content::before {
-            top: 10px;
-            right: 20px;
-        }
-
-        .zikr-content::after {
-            bottom: -10px;
-            left: 20px;
-            transform: rotate(180deg);
-        }
-
-        .zikr-footer {
-            padding: 20px 30px;
-            background: rgba(0,0,0,0.02);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .zikr-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .zikr-ref {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        .zikr-desc {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .counter-btn {
-            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-family: 'Tajawal', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(212, 167, 76, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .counter-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(212, 167, 76, 0.4);
-        }
-
-        .counter-btn:active {
-            transform: scale(0.95);
-        }
-
-        .counter-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .counter-btn:active::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .zikr-card.completed .counter-btn {
-            background: var(--success);
-            cursor: default;
-            box-shadow: none;
-        }
-
-        .counter-btn i {
-            font-size: 0.9rem;
-        }
-
-        .count-display {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 800;
-        }
-
-        /* Loading State */
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: var(--text-muted);
-        }
-
-        .loading i {
-            font-size: 3rem;
-            color: var(--gold);
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Error State */
-        .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 30px;
-            border-radius: var(--radius);
-            text-align: center;
-            margin: 20px;
-        }
-
-        .error-message i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .retry-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-family: 'Tajawal', sans-serif;
-            font-weight: 600;
-        }
-
-        /* Completion Animation */
-        @keyframes complete {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        .zikr-card.completed {
-            animation: complete 0.5s ease;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .header h1 { font-size: 1.4rem; }
-            .zikr-content { padding: 20px; font-size: 1.2rem; }
-            .zikr-footer { flex-direction: column; text-align: center; }
-            .controls { justify-content: center; }
-        }
-
-        /* Floating Particles */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: var(--gold);
-            border-radius: 50%;
-            opacity: 0.1;
-            animation: float 20s infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.1; }
-            90% { opacity: 0.1; }
-            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأذكار | الموسوعة الإسلامية</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="app-init.js"></script>
+<style>
+:root{
+  --bg:#060d0a;--surf:#0c1810;--surf2:#112015;--surf3:#162a1a;
+  --bdr:rgba(196,160,60,.15);--bdr-h:rgba(196,160,60,.35);
+  --gold:#c4a03c;--gold-l:#e0bc5a;--gold-d:#8a6e26;
+  --grn:#2e7d4f;--grn-l:#3da866;
+  --tx:#eee8d8;--tx2:#b0a88a;--tx3:#6a6248;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
+}
+body.light{
+  --bg:#f0e8d5;--surf:#fdf6e3;--surf2:#f5ecd5;--surf3:#ede3cc;
+  --bdr:rgba(120,90,20,.15);--bdr-h:rgba(120,90,20,.35);
+  --gold:#7a5a10;--gold-l:#9a7218;--gold-d:#5a4008;
+  --tx:#1a1005;--tx2:#5a4820;--tx3:#8a7a5a;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+*:focus{outline:none!important;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Naskh Arabic',serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;transition:background .4s,color .4s;}
+
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(46,125,79,.1),transparent);
+  pointer-events:none;z-index:0;
+}
+
+/* ══ HEADER ══ */
+.header{position:sticky;top:0;z-index:100;transition:all .3s;}
+.header.sc{background:rgba(6,13,10,.93);border-bottom:1px solid var(--bdr);backdrop-filter:blur(18px);}
+body.light .header.sc{background:rgba(240,232,213,.93);}
+.hinner{max-width:680px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--tx2);font-size:.85rem;text-decoration:none;padding:7px 14px;border:1px solid var(--bdr);border-radius:28px;transition:all .2s;}
+.back-btn:hover{border-color:var(--bdr-h);color:var(--gold-l);}
+.h-title{font-family:'Amiri',serif;font-size:1.05rem;color:var(--gold-l);}
+.hbtns{display:flex;gap:8px;}
+.hbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--bdr);background:var(--surf);color:var(--tx2);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.hbtn:hover{border-color:var(--bdr-h);color:var(--gold);}
+
+/* ══ PAGE ══ */
+.page{max-width:680px;margin:0 auto;padding:20px 16px 100px;position:relative;z-index:1;}
+
+/* ══ HERO ══ */
+.hero{text-align:center;padding:28px 16px 24px;margin-bottom:20px;}
+.hero-icon{font-size:3rem;margin-bottom:10px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.hero-title{font-family:'Amiri',serif;font-size:clamp(1.6rem,5vw,2.2rem);color:var(--gold-l);margin-bottom:4px;}
+.hero-sub{font-size:.82rem;color:var(--tx3);}
+
+/* ══ CATEGORIES ══ */
+.cats{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:20px;scrollbar-width:none;}
+.cats::-webkit-scrollbar{display:none;}
+.cat-btn{
+  flex-shrink:0;padding:8px 18px;border-radius:28px;
+  border:1px solid var(--bdr);background:var(--surf);
+  color:var(--tx3);font-family:'Noto Naskh Arabic',serif;font-size:.82rem;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;
+}
+.cat-btn.active{background:rgba(196,160,60,.12);border-color:var(--bdr-h);color:var(--gold-l);}
+.cat-btn:hover{border-color:var(--bdr-h);}
+
+/* ══ PROGRESS ══ */
+.progress-wrap{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:14px;
+  padding:14px 18px;margin-bottom:20px;
+  display:flex;align-items:center;gap:14px;
+}
+.prog-icon{font-size:1.4rem;}
+.prog-info{flex:1;}
+.prog-label{font-size:.78rem;color:var(--tx3);margin-bottom:6px;}
+.prog-bar{height:6px;background:var(--surf3);border-radius:3px;overflow:hidden;margin-bottom:4px;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));border-radius:3px;transition:width .5s var(--ease);width:0%;}
+.prog-text{font-size:.72rem;color:var(--tx3);}
+.prog-reset{padding:5px 12px;border-radius:8px;border:1px solid var(--bdr);background:transparent;color:var(--tx3);font-family:'Noto Naskh Arabic',serif;font-size:.72rem;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.prog-reset:hover{border-color:var(--bdr-h);color:var(--gold);}
+
+/* ══ NOTIF SETTINGS ══ */
+.notif-card{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:14px;
+  padding:14px 18px;margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:border-color .2s;
+}
+.notif-card:hover{border-color:var(--bdr-h);}
+.notif-card-icon{font-size:1.3rem;}
+.notif-card-info{flex:1;}
+.notif-card-title{font-size:.88rem;color:var(--tx);font-weight:600;}
+.notif-card-sub{font-size:.72rem;color:var(--tx3);margin-top:2px;}
+.notif-toggle{
+  width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;
+  position:relative;transition:background .3s;flex-shrink:0;
+  background:var(--surf3);
+}
+.notif-toggle.on{background:var(--grn);}
+.notif-toggle::after{
+  content:'';position:absolute;top:3px;right:3px;
+  width:18px;height:18px;border-radius:50%;background:white;
+  transition:transform .3s var(--spring);
+}
+.notif-toggle.on::after{transform:translateX(-20px);}
+
+/* ══ ZIKR CARDS ══ */
+.zikr-card{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:18px;
+  margin-bottom:14px;overflow:hidden;transition:all .25s var(--ease);
+  position:relative;
+}
+.zikr-card::before{
+  content:'';position:absolute;right:0;top:0;bottom:0;width:3px;
+  background:var(--gold);border-radius:0 3px 3px 0;
+}
+.zikr-card.completed{opacity:.6;}
+.zikr-card.completed::before{background:var(--grn);}
+.zikr-card:not(.completed):hover{border-color:var(--bdr-h);transform:translateY(-2px);}
+
+.zikr-top{
+  padding:12px 18px;display:flex;justify-content:space-between;align-items:center;
+  border-bottom:1px solid var(--bdr);background:rgba(196,160,60,.03);
+}
+.zikr-num{
+  width:28px;height:28px;border-radius:50%;background:rgba(196,160,60,.12);
+  border:1px solid var(--bdr);color:var(--gold-l);font-size:.78rem;
+  display:flex;align-items:center;justify-content:center;font-weight:600;
+}
+.zikr-card.completed .zikr-num{background:rgba(61,168,102,.12);border-color:rgba(61,168,102,.3);color:var(--grn-l);}
+.zikr-badge{
+  font-size:.7rem;padding:3px 10px;border-radius:10px;
+  background:rgba(196,160,60,.08);border:1px solid var(--bdr);color:var(--gold);
+}
+.zikr-ref{font-size:.7rem;color:var(--tx3);}
+
+.zikr-body{
+  padding:22px 20px;
+  font-family:'Amiri',serif;font-size:clamp(1.2rem,3.5vw,1.6rem);
+  line-height:2.1;text-align:center;color:var(--tx);
+}
+
+.zikr-foot{
+  padding:14px 18px;border-top:1px solid var(--bdr);
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  flex-wrap:wrap;
+}
+.zikr-hint{font-size:.72rem;color:var(--tx3);}
+
+.counter-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 20px;border-radius:24px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--gold-d),var(--gold));
+  color:#0c1008;font-family:'Noto Naskh Arabic',serif;font-weight:700;font-size:.9rem;
+  transition:all .2s;box-shadow:0 3px 12px rgba(196,160,60,.25);
+  position:relative;overflow:hidden;
+}
+.counter-btn:hover{transform:scale(1.04);}
+.counter-btn:active{transform:scale(.96);}
+.counter-btn.done{background:linear-gradient(135deg,#1a4d30,var(--grn));box-shadow:none;color:white;cursor:default;}
+.count-num{
+  background:rgba(0,0,0,.15);padding:2px 10px;border-radius:12px;
+  font-size:1rem;font-weight:800;min-width:28px;text-align:center;
+}
+
+/* ripple */
+.counter-btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);opacity:0;transition:opacity .2s;}
+.counter-btn:active::after{opacity:1;}
+
+/* ══ NOTIF SETTINGS MODAL ══ */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;opacity:0;pointer-events:none;transition:opacity .3s;display:flex;align-items:flex-end;justify-content:center;}
+.modal-bg.show{opacity:1;pointer-events:all;}
+.modal-box{
+  background:var(--surf);border:1px solid var(--bdr-h);border-radius:24px 24px 0 0;
+  padding:24px 20px 40px;width:100%;max-width:500px;
+  transform:translateY(100%);transition:transform .4s var(--spring);
+}
+.modal-bg.show .modal-box{transform:translateY(0);}
+.modal-title{font-family:'Amiri',serif;font-size:1.2rem;color:var(--gold-l);margin-bottom:4px;}
+.modal-sub{font-size:.78rem;color:var(--tx3);margin-bottom:20px;}
+.modal-divider{height:1px;background:var(--bdr);margin:16px 0;}
+
+.time-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;}
+.time-row-info{}
+.time-row-label{font-size:.88rem;color:var(--tx);font-weight:600;}
+.time-row-sub{font-size:.72rem;color:var(--tx3);margin-top:2px;}
+.time-input{
+  padding:7px 12px;border-radius:10px;border:1px solid var(--bdr);
+  background:var(--surf2);color:var(--tx);font-size:.85rem;
+  font-family:'Noto Naskh Arabic',serif;cursor:pointer;transition:border-color .2s;
+}
+.time-input:focus{border-color:var(--bdr-h);}
+.modal-save{
+  width:100%;padding:13px;border-radius:14px;border:none;cursor:pointer;margin-top:20px;
+  background:linear-gradient(135deg,var(--gold-d),var(--gold));
+  color:#0c1008;font-family:'Noto Naskh Arabic',serif;font-weight:700;font-size:1rem;
+  transition:all .2s;
+}
+.modal-save:hover{transform:translateY(-2px);}
+.modal-close{position:absolute;top:16px;left:16px;width:30px;height:30px;border-radius:50%;border:1px solid var(--bdr);background:transparent;color:var(--tx3);cursor:pointer;font-size:.9rem;}
+
+/* ══ EMPTY ══ */
+.empty{text-align:center;padding:50px 20px;color:var(--tx3);}
+.empty-icon{font-size:3rem;margin-bottom:12px;}
+.empty-title{font-size:1rem;color:var(--tx2);}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--surf3);border:1px solid var(--bdr-h);color:var(--gold-l);padding:10px 22px;border-radius:28px;font-size:.85rem;z-index:999;transition:transform .3s;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ══ PARTICLES ══ */
+.particle{position:fixed;border-radius:50%;pointer-events:none;z-index:999;}
+
+@media(max-width:400px){
+  .zikr-body{font-size:1.1rem;}
+  .zikr-foot{flex-direction:column;align-items:flex-start;}
+  .counter-btn{width:100%;justify-content:center;}
+}
+</style>
 </head>
 <body>
-    <!-- Floating Particles Background -->
-    <div class="particles" id="particles"></div>
 
-    <!-- Header -->
-    <header class="header">
-        <div class="header-content">
-            <div class="logo"><i class="fas fa-mosque"></i></div>
-            <h1>موسوعة الأذكار</h1>
-            <p>تطبيق الأذكار اليومية والتسابيح</p>
+<div class="toast" id="toast"></div>
+
+<!-- NOTIF SETTINGS MODAL -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal-box" style="position:relative;">
+    <button class="modal-close" onclick="closeNotifModal()">✕</button>
+    <div class="modal-title">🔔 إعدادات التذكير</div>
+    <div class="modal-sub">حدد وقت تذكيرك لكل نوع من الأذكار</div>
+
+    <div class="modal-divider"></div>
+
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">🌅 أذكار الصباح</div>
+        <div class="time-row-sub">تذكير يومي صباحاً</div>
+      </div>
+      <input type="time" class="time-input" id="t-morning" value="06:00">
+    </div>
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">🌆 أذكار المساء</div>
+        <div class="time-row-sub">تذكير يومي مساءً</div>
+      </div>
+      <input type="time" class="time-input" id="t-evening" value="16:00">
+    </div>
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">🕌 أذكار بعد الصلاة</div>
+        <div class="time-row-sub">تذكير بعد كل صلاة</div>
+      </div>
+      <input type="time" class="time-input" id="t-prayer" value="13:00">
+    </div>
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">🌙 أذكار النوم</div>
+        <div class="time-row-sub">تذكير قبل النوم</div>
+      </div>
+      <input type="time" class="time-input" id="t-sleep" value="22:00">
+    </div>
+
+    <button class="modal-save" onclick="saveNotifSettings()">💾 حفظ الإعدادات</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header" id="header">
+  <div class="hinner">
+    <a href="index.html" class="back-btn">⬅ الرئيسية</a>
+    <span class="h-title">🤲 الأذكار</span>
+    <div class="hbtns">
+      <button class="hbtn" onclick="toggleTheme()" title="تغيير المظهر">🌓</button>
+      <button class="hbtn" onclick="openNotifModal()" title="إعدادات التذكير">🔔</button>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-icon">🤲</div>
+    <div class="hero-title">موسوعة الأذكار</div>
+    <div class="hero-sub">أذكارك اليومية من القرآن والسنة النبوية</div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="cats" id="cats">
+    <button class="cat-btn active" data-cat="morning"     onclick="selectCat('morning',this)">🌅 الصباح</button>
+    <button class="cat-btn"        data-cat="evening"     onclick="selectCat('evening',this)">🌆 المساء</button>
+    <button class="cat-btn"        data-cat="after_prayer" onclick="selectCat('after_prayer',this)">🕌 بعد الصلاة</button>
+    <button class="cat-btn"        data-cat="sleep"       onclick="selectCat('sleep',this)">🌙 النوم</button>
+    <button class="cat-btn"        data-cat="tasbih"      onclick="selectCat('tasbih',this)">📿 تسابيح</button>
+  </div>
+
+  <!-- NOTIF CARD -->
+  <div class="notif-card" onclick="openNotifModal()">
+    <div class="notif-card-icon">🔔</div>
+    <div class="notif-card-info">
+      <div class="notif-card-title">تذكيرات الأذكار اليومية</div>
+      <div class="notif-card-sub" id="notifSubText">اضغط لضبط مواعيد التذكير</div>
+    </div>
+    <button class="notif-toggle" id="notifToggleBtn" onclick="event.stopPropagation();toggleNotif()"></button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="prog-icon">📊</div>
+    <div class="prog-info">
+      <div class="prog-label">تقدمك اليوم</div>
+      <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+      <div class="prog-text" id="progText">0 من 0 ذكر</div>
+    </div>
+    <button class="prog-reset" onclick="resetProgress()">↺ إعادة</button>
+  </div>
+
+  <!-- AZKAR LIST -->
+  <div id="azkarList"></div>
+
+</div>
+
+<script>
+/* ══ DATA ══ */
+const AZKAR = {
+  morning:[
+    {text:"أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"مسلم",desc:"ذكر الصباح"},
+    {text:"اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ",count:1,ref:"الترمذي",desc:"افتتاح اليوم"},
+    {text:"اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ",count:1,ref:"البخاري",desc:"سيد الاستغفار"},
+    {text:"سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",count:100,ref:"البخاري",desc:"التسبيح"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:10,ref:"البخاري",desc:"التهليل"},
+    {text:"اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ",count:1,ref:"ابن ماجه",desc:"طلب العافية"},
+    {text:"أَعُوذُ بِاللَّهِ السَّمِيعِ الْعَلِيمِ مِنَ الشَّيْطَانِ الرَّجِيمِ",count:3,ref:"الترمذي",desc:"الاستعاذة"},
+  ],
+  evening:[
+    {text:"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",count:1,ref:"مسلم",desc:"ذكر المساء"},
+    {text:"اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ",count:1,ref:"الترمذي",desc:"ذكر المساء"},
+    {text:"اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ",count:1,ref:"أبو داود",desc:"شكر النعم"},
+    {text:"أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ",count:3,ref:"مسلم",desc:"الحماية"},
+    {text:"بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",count:3,ref:"أبو داود",desc:"الوقاية"},
+    {text:"رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا",count:3,ref:"أحمد",desc:"الرضا"},
+  ],
+  after_prayer:[
+    {text:"أَسْتَغْفِرُ اللَّهَ",count:3,ref:"مسلم",desc:"بعد السلام"},
+    {text:"اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",count:1,ref:"مسلم",desc:"التسليم"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ذكر بعد الصلاة"},
+    {text:"سُبْحَانَ اللَّهِ",count:33,ref:"مسلم",desc:"التسبيح"},
+    {text:"الْحَمْدُ لِلَّهِ",count:33,ref:"مسلم",desc:"التحميد"},
+    {text:"اللَّهُ أَكْبَرُ",count:33,ref:"مسلم",desc:"التكبير"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ",count:1,ref:"مسلم",desc:"التهليل"},
+  ],
+  sleep:[
+    {text:"بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",count:1,ref:"البخاري",desc:"قبل النوم"},
+    {text:"سُبْحَانَ اللَّهِ",count:33,ref:"البخاري",desc:"على الفراش"},
+    {text:"الْحَمْدُ لِلَّهِ",count:33,ref:"البخاري",desc:"على الفراش"},
+    {text:"اللَّهُ أَكْبَرُ",count:34,ref:"البخاري",desc:"على الفراش"},
+    {text:"اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ",count:3,ref:"أبو داود",desc:"الحماية"},
+  ],
+  tasbih:[
+    {text:"سُبْحَانَ اللَّهِ",count:100,ref:"مسلم",desc:"التسبيح"},
+    {text:"الْحَمْدُ لِلَّهِ",count:100,ref:"مسلم",desc:"التحميد"},
+    {text:"اللَّهُ أَكْبَرُ",count:100,ref:"مسلم",desc:"التكبير"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ",count:100,ref:"مسلم",desc:"التهليل"},
+    {text:"أَسْتَغْفِرُ اللَّهَ",count:100,ref:"مسلم",desc:"الاستغفار"},
+    {text:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ",count:100,ref:"مسلم",desc:"الصلاة على النبي"},
+  ]
+};
+
+const CAT_NAMES = {
+  morning:'أذكار الصباح', evening:'أذكار المساء',
+  after_prayer:'أذكار بعد الصلاة', sleep:'أذكار النوم', tasbih:'تسابيح'
+};
+
+const DEFAULT_TIMES = {morning:'06:00', evening:'16:00', after_prayer:'13:00', sleep:'22:00'};
+
+let currentCat = 'morning';
+let completed = new Set();
+let notifEnabled = JSON.parse(localStorage.getItem('adhkarNotif') || 'false');
+let notifTimes = JSON.parse(localStorage.getItem('adhkarTimes') || JSON.stringify(DEFAULT_TIMES));
+let scheduledTimers = {};
+
+/* ══ INIT ══ */
+window.addEventListener('DOMContentLoaded', ()=>{
+  loadCat('morning');
+  updateNotifUI();
+  scheduleAll();
+  document.getElementById('t-morning').value = notifTimes.morning || '06:00';
+  document.getElementById('t-evening').value = notifTimes.evening || '16:00';
+  document.getElementById('t-prayer').value  = notifTimes.after_prayer || '13:00';
+  document.getElementById('t-sleep').value   = notifTimes.sleep || '22:00';
+});
+
+window.addEventListener('scroll',()=>{
+  document.getElementById('header').classList.toggle('sc', scrollY>10);
+},{passive:true});
+
+/* ══ CATEGORY ══ */
+window.selectCat = function(cat, btn){
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  completed = new Set(JSON.parse(localStorage.getItem('prog_'+cat)||'[]'));
+  loadCat(cat);
+};
+
+function loadCat(cat){
+  currentCat = cat;
+  const azkar = AZKAR[cat] || [];
+  completed = new Set(JSON.parse(localStorage.getItem('prog_'+cat)||'[]'));
+  const list = document.getElementById('azkarList');
+
+  list.innerHTML = azkar.map((z,i)=>{
+    const isDone = completed.has(i);
+    const savedCount = localStorage.getItem(`cnt_${cat}_${i}`);
+    const displayCount = isDone ? '✓' : (savedCount !== null ? savedCount : z.count);
+    return `
+    <div class="zikr-card${isDone?' completed':''}" id="zc-${i}">
+      <div class="zikr-top">
+        <div class="zikr-num${isDone?' style="background:rgba(61,168,102,.12);border-color:rgba(61,168,102,.3);color:#3da866"':''}">
+          ${isDone ? '✓' : i+1}
         </div>
-    </header>
-
-    <!-- Controls -->
-    <div class="controls">
-        <a href="index.html" class="back-btn">
-            <i class="fas fa-arrow-right"></i>
-            العودة للرئيسية
-        </a>
-        <button class="theme-toggle" onclick="toggleTheme()" title="تغيير الوضع">
-            <i class="fas fa-moon" id="themeIcon"></i>
+        <div class="zikr-badge">${z.desc}</div>
+        <div class="zikr-ref">📖 ${z.ref}</div>
+      </div>
+      <div class="zikr-body">${z.text}</div>
+      <div class="zikr-foot">
+        <div class="zikr-hint">${isDone ? 'تم الذكر ✅' : 'اضغط للعد'}</div>
+        <button class="counter-btn${isDone?' done':''}" id="cb-${i}" 
+          onclick="${isDone ? '' : `tapZikr(${i},${z.count})`}"
+          ${isDone ? 'disabled' : ''}>
+          ${isDone
+            ? '<span>✓ تم</span>'
+            : `<span class="count-num" id="cn-${i}">${displayCount}</span><span>تسبيح</span>`
+          }
         </button>
-    </div>
+      </div>
+    </div>`;
+  }).join('');
 
-    <!-- Category Selector -->
-    <div class="category-section">
-        <div class="category-selector">
-            <div class="selector-label">
-                <i class="fas fa-book-open"></i>
-                اختر فئة الأذكار
-            </div>
-            <select id="categorySelect" onchange="loadCategory()">
-                <option value="morning">🌅 أذكار الصباح</option>
-                <option value="evening">🌙 أذكار المساء</option>
-                <option value="after_prayer">🕌 أذكار بعد الصلاة</option>
-                <option value="sleep">😴 أذكار النوم</option>
-                <option value="tasbih">📿 تسابيح</option>
-            </select>
-        </div>
-    </div>
+  updateProgress();
+}
 
-    <!-- Progress -->
-    <div class="progress-section" id="progressSection" style="display: none;">
-        <div class="progress-card">
-            <div class="progress-icon">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <div class="progress-info">
-                <h3>تقدمك اليومي</h3>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="progress-text" id="progressText">0% (0 من 0)</div>
-            </div>
-        </div>
-    </div>
+/* ══ TAP ZIKR ══ */
+window.tapZikr = function(idx, total){
+  const key = `cnt_${currentCat}_${idx}`;
+  let cur = parseInt(localStorage.getItem(key) ?? total);
 
-    <!-- Azkar Container -->
-    <div class="azkar-container" id="azkarContainer">
-        <div class="loading">
-            <i class="fas fa-circle-notch"></i>
-            <p>جاري تحميل الأذكار...</p>
-        </div>
-    </div>
+  if(cur > 1){
+    cur--;
+    localStorage.setItem(key, cur);
+    const cn = document.getElementById(`cn-${idx}`);
+    if(cn){
+      cn.textContent = cur;
+      cn.style.transform = 'scale(1.3)';
+      setTimeout(()=>cn.style.transform='',200);
+    }
+    if(navigator.vibrate) navigator.vibrate(15);
+  } else {
+    // DONE
+    localStorage.removeItem(key);
+    completed.add(idx);
+    localStorage.setItem('prog_'+currentCat, JSON.stringify([...completed]));
 
-    <script>
-        // Global Variables
-        let azkarData = {};
-        let currentCategory = 'morning';
-        let completedAzkar = new Set();
-        let totalAzkar = 0;
+    const card = document.getElementById(`zc-${idx}`);
+    if(card){
+      card.classList.add('completed');
+      card.querySelector('.zikr-hint').textContent = 'تم الذكر ✅';
+      const btn = document.getElementById(`cb-${idx}`);
+      btn.className = 'counter-btn done';
+      btn.disabled = true;
+      btn.innerHTML = '<span>✓ تم</span>';
+    }
+    if(navigator.vibrate) navigator.vibrate([40,80,40]);
+    spawnParticles(document.getElementById(`zc-${idx}`));
+    updateProgress();
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            loadTheme();
-            fetchAzkarData();
-        });
+    // كل الأذكار اكتملت؟
+    if(completed.size === AZKAR[currentCat].length){
+      setTimeout(()=>showToast('🎉 أحسنت! أكملت جميع الأذكار'), 400);
+    }
+  }
+};
 
-        // Create Background Particles
-        function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-                container.appendChild(particle);
-            }
-        }
+/* ══ PROGRESS ══ */
+function updateProgress(){
+  const total = AZKAR[currentCat]?.length || 0;
+  const done  = completed.size;
+  const pct   = total ? (done/total)*100 : 0;
+  document.getElementById('progFill').style.width = pct+'%';
+  document.getElementById('progText').textContent = `${done} من ${total} ذكر (${Math.round(pct)}%)`;
+}
 
-        // Theme Toggle
-        function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            html.setAttribute('data-theme', newTheme);
-            icon.className = newTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            localStorage.setItem('azkarTheme', newTheme);
-        }
+window.resetProgress = function(){
+  const cat = currentCat;
+  AZKAR[cat].forEach((_,i)=> localStorage.removeItem(`cnt_${cat}_${i}`));
+  localStorage.removeItem('prog_'+cat);
+  completed = new Set();
+  loadCat(cat);
+  showToast('↺ تم إعادة الأذكار');
+};
 
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('azkarTheme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            document.getElementById('themeIcon').className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-        }
+/* ══ PARTICLES ══ */
+function spawnParticles(el){
+  const r = el.getBoundingClientRect();
+  const colors = ['#c4a03c','#3da866','#e0bc5a','#8a6e26'];
+  for(let i=0;i<20;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const sz = 6+Math.random()*6;
+    p.style.cssText=`width:${sz}px;height:${sz}px;background:${colors[i%colors.length]};left:${r.left+r.width/2}px;top:${r.top+r.height/2}px;`;
+    document.body.appendChild(p);
+    const a = Math.PI*2*i/20;
+    const v = 60+Math.random()*80;
+    p.animate([
+      {transform:'translate(0,0) scale(1)',opacity:1},
+      {transform:`translate(${Math.cos(a)*v}px,${Math.sin(a)*v}px) scale(0)`,opacity:0}
+    ],{duration:800,easing:'cubic-bezier(0,.9,.57,1)'}).onfinish=()=>p.remove();
+  }
+}
 
-        // Fetch Data from API
-        async function fetchAzkarData() {
-            try {
-                // Using a reliable API endpoint
-                const response = await fetch('https://api.npoint.io/2f2c5b0e8f5e5e5e5e5e');
-                
-                // If that fails, use backup data
-                if (!response.ok) throw new Error('API failed');
-                
-                azkarData = await response.json();
-                loadCategory();
-            } catch (error) {
-                console.log('Using backup data...');
-                // Backup data embedded in the code
-                useBackupData();
-            }
-        }
+/* ══ NOTIFICATIONS ══ */
+window.toggleNotif = async function(){
+  if(!notifEnabled){
+    if(Notification?.permission !== 'granted'){
+      const p = await Notification.requestPermission();
+      if(p !== 'granted'){ showToast('⚠️ لم يتم السماح بالإشعارات'); return; }
+    }
+    notifEnabled = true;
+    showToast('✅ تم تفعيل التذكيرات');
+  } else {
+    notifEnabled = false;
+    showToast('🔕 تم إيقاف التذكيرات');
+  }
+  localStorage.setItem('adhkarNotif', JSON.stringify(notifEnabled));
+  updateNotifUI();
+  scheduleAll();
+};
 
-        // Backup Data (in case API fails)
-        function useBackupData() {
-            azkarData = {
-                "morning": [
-                    { content: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", count: 1, reference: "مسلم", description: "ذكر الصباح" },
-                    { content: "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ", count: 1, reference: "الترمذي", description: "ذكر الصباح" },
-                    { content: "اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ", count: 1, reference: "أبو داود", description: "شكر النعم" },
-                    { content: "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا", count: 1, reference: "ابن ماجه", description: "دعاء الصباح" },
-                    { content: "أَعُوذُ بِاللَّهِ مِنْ الشَّيْطَانِ الرَّجِيمِ", count: 3, reference: "البقرة: 255", description: "آية الكرسي" },
-                    { content: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ﴿الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ...﴾", count: 3, reference: "الفاتحة", description: "سورة الفاتحة" },
-                    { content: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ﴿قُلْ هُوَ اللَّهُ أَحَدٌ...﴾", count: 3, reference: "الإخلاص", description: "المعوذات" },
-                    { content: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ﴿قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ...﴾", count: 3, reference: "الفلق", description: "المعوذات" },
-                    { content: "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ﴿قُلْ أَعُوذُ بِرَبِّ النَّاسِ...﴾", count: 3, reference: "الناس", description: "المعوذات" },
-                    { content: "أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ، حَنِيفًا مُسْلِمًا، وَمَا كَانَ مِنْ الْمُشْرِكِينَ", count: 1, reference: "مسلم", description: "الفطرة" }
-                ],
-                "evening": [
-                    { content: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", count: 1, reference: "مسلم", description: "ذكر المساء" },
-                    { content: "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ", count: 1, reference: "الترمذي", description: "ذكر المساء" },
-                    { content: "اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ", count: 4, reference: "أبو داود", description: "الإمساء" },
-                    { content: "اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ", count: 1, reference: "أبو داود", description: "شكر النعم" },
-                    { content: "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ", count: 3, reference: "مسلم", description: "الحماية" }
-                ],
-                "after_prayer": [
-                    { content: "أَسْتَغْفِرُ اللَّهَ", count: 3, reference: "مسلم", description: "بعد السلام" },
-                    { content: "اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ", count: 1, reference: "مسلم", description: "التسليم" },
-                    { content: "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ", count: 1, reference: "البخاري", description: "ذكر بعد الصلاة" },
-                    { content: "سُبْحَانَ اللَّهِ", count: 33, reference: "مسلم", description: "التسبيح" },
-                    { content: "الْحَمْدُ لِلَّهِ", count: 33, reference: "مسلم", description: "التحميد" },
-                    { content: "اللَّهُ أَكْبَرُ", count: 33, reference: "مسلم", description: "التكبير" },
-                    { content: "لَا إِلَهَ إِلَّا اللَّهُ", count: 1, reference: "مسلم", description: "التهليل" }
-                ],
-                "sleep": [
-                    { content: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا", count: 1, reference: "البخاري", description: "قبل النوم" },
-                    { content: "سُبْحَانَ اللَّهِ", count: 33, reference: "البخاري", description: "على الفراش" },
-                    { content: "الْحَمْدُ لِلَّهِ", count: 33, reference: "البخاري", description: "على الفراش" },
-                    { content: "اللَّهُ أَكْبَرُ", count: 34, reference: "البخاري", description: "على الفراش" },
-                    { content: "اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبْعَثُ عِبَادَكَ", count: 3, reference: "أبو داود", description: "الحماية" }
-                ],
-                "tasbih": [
-                    { content: "سُبْحَانَ اللَّهِ", count: 100, reference: "مسلم", description: "التسبيح" },
-                    { content: "الْحَمْدُ لِلَّهِ", count: 100, reference: "مسلم", description: "التحميد" },
-                    { content: "اللَّهُ أَكْبَرُ", count: 100, reference: "مسلم", description: "التكبير" },
-                    { content: "لَا إِلَهَ إِلَّا اللَّهُ", count: 100, reference: "مسلم", description: "التهليل" },
-                    { content: "أَسْتَغْفِرُ اللَّهَ", count: 100, reference: "مسلم", description: "الاستغفار" },
-                    { content: "الصَّلَاةُ عَلَى النَّبِيِّ", count: 100, reference: "مسلم", description: "الصلاة على النبي" }
-                ]
-            };
-            loadCategory();
-        }
+function updateNotifUI(){
+  const btn = document.getElementById('notifToggleBtn');
+  const sub = document.getElementById('notifSubText');
+  if(btn) btn.classList.toggle('on', notifEnabled);
+  if(sub){
+    if(notifEnabled){
+      const t = notifTimes;
+      sub.textContent = `صباح ${t.morning} • مساء ${t.evening} • نوم ${t.sleep}`;
+    } else {
+      sub.textContent = 'اضغط لضبط مواعيد التذكير';
+    }
+  }
+}
 
-        // Load Category
-        function loadCategory() {
-            const select = document.getElementById('categorySelect');
-            currentCategory = select.value;
-            
-            const categoryNames = {
-                morning: "أذكار الصباح",
-                evening: "أذكار المساء", 
-                after_prayer: "أذكار بعد الصلاة",
-                sleep: "أذكار النوم",
-                tasbih: "تسابيح"
-            };
+function scheduleAll(){
+  Object.values(scheduledTimers).forEach(clearTimeout);
+  scheduledTimers = {};
+  if(!notifEnabled || Notification?.permission !== 'granted') return;
 
-            const azkar = azkarData[currentCategory] || [];
-            const container = document.getElementById('azkarContainer');
-            
-            // Reset progress
-            completedAzkar.clear();
-            totalAzkar = azkar.length;
-            updateProgress();
+  const schedule = [
+    {key:'morning',    label:'🌅 أذكار الصباح',     time: notifTimes.morning},
+    {key:'evening',    label:'🌆 أذكار المساء',     time: notifTimes.evening},
+    {key:'after_prayer',label:'🕌 أذكار بعد الصلاة', time: notifTimes.after_prayer},
+    {key:'sleep',      label:'🌙 أذكار النوم',      time: notifTimes.sleep},
+  ];
 
-            if (azkar.length === 0) {
-                container.innerHTML = `
-                    <div class="error-message">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>لا توجد أذكار في هذا القسم حالياً</p>
-                    </div>
-                `;
-                return;
-            }
+  const now = new Date();
+  schedule.forEach(s=>{
+    if(!s.time) return;
+    const [h,m] = s.time.split(':').map(Number);
+    const target = new Date(now);
+    target.setHours(h,m,0,0);
+    if(target <= now) target.setDate(target.getDate()+1);
+    const diff = target - now;
+    scheduledTimers[s.key] = setTimeout(()=>{
+      new Notification(s.label, {
+        body: 'حان وقت ذكرك — لا تنسَ ذكر الله',
+        icon: 'https://rrau4535-sketch.github.io/eslame/icons/icon-192.png',
+        badge:'https://rrau4535-sketch.github.io/eslame/icons/icon-96.png',
+        tag: s.key,
+        renotify: true,
+      });
+      // جدول تاني يوم
+      setTimeout(()=>scheduleAll(), 1000);
+    }, diff);
+  });
+}
 
-            container.innerHTML = azkar.map((zikr, index) => `
-                <div class="zikr-card" id="zikr-${index}" data-index="${index}">
-                    <div class="zikr-header">
-                        <div class="zikr-number">${index + 1}</div>
-                        <div class="zikr-badge">${zikr.description || 'ذكر'}</div>
-                    </div>
-                    <div class="zikr-content">${zikr.content}</div>
-                    <div class="zikr-footer">
-                        <div class="zikr-meta">
-                            <span class="zikr-ref"><i class="fas fa-book"></i> ${zikr.reference || 'حديث'}</span>
-                            <span class="zikr-desc">اضغط للتسبيح</span>
-                        </div>
-                        <button class="counter-btn" onclick="decrementCount(${index}, ${zikr.count})">
-                            <span class="count-display" id="count-${index}">${zikr.count}</span>
-                            <i class="fas fa-hand-pointer"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+/* ══ MODAL ══ */
+window.openNotifModal = function(){
+  document.getElementById('modalBg').classList.add('show');
+};
+window.closeNotifModal = function(){
+  document.getElementById('modalBg').classList.remove('show');
+};
+window.closeModal = function(e){
+  if(e.target.id==='modalBg') closeNotifModal();
+};
+window.saveNotifSettings = function(){
+  notifTimes = {
+    morning:      document.getElementById('t-morning').value,
+    evening:      document.getElementById('t-evening').value,
+    after_prayer: document.getElementById('t-prayer').value,
+    sleep:        document.getElementById('t-sleep').value,
+  };
+  localStorage.setItem('adhkarTimes', JSON.stringify(notifTimes));
+  
+  if(!notifEnabled){
+    notifEnabled = true;
+    localStorage.setItem('adhkarNotif','true');
+  }
+  updateNotifUI();
+  scheduleAll();
+  closeNotifModal();
+  showToast('✅ تم حفظ مواعيد التذكير');
+};
 
-            // Show progress section
-            document.getElementById('progressSection').style.display = 'block';
-            
-            // Smooth scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Decrement Count
-        function decrementCount(index, initialCount) {
-            const countSpan = document.getElementById(`count-${index}`);
-            const card = document.getElementById(`zikr-${index}`);
-            let current = parseInt(countSpan.textContent);
-
-            if (current > 1) {
-                current--;
-                countSpan.textContent = current;
-                
-                // Visual feedback
-                countSpan.style.transform = 'scale(1.3)';
-                setTimeout(() => countSpan.style.transform = 'scale(1)', 200);
-                
-                // Vibration
-                if (navigator.vibrate) navigator.vibrate(20);
-                
-            } else if (current === 1) {
-                // Complete
-                current = 0;
-                countSpan.textContent = '✓';
-                card.classList.add('completed');
-                
-                // Update button
-                const btn = card.querySelector('.counter-btn');
-                btn.innerHTML = '<span>تم</span> <i class="fas fa-check-circle"></i>';
-                btn.style.background = 'var(--success)';
-                btn.onclick = null;
-                
-                // Mark as completed
-                completedAzkar.add(index);
-                updateProgress();
-                
-                // Stronger vibration
-                if (navigator.vibrate) navigator.vibrate([50, 100, 50]);
-                
-                // Celebration effect
-                createCelebration(card);
-            }
-        }
-
-        // Update Progress
-        function updateProgress() {
-            const percentage = totalAzkar > 0 ? (completedAzkar.size / totalAzkar) * 100 : 0;
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-            
-            progressFill.style.width = percentage + '%';
-            progressText.textContent = `${Math.round(percentage)}% (${completedAzkar.size} من ${totalAzkar})`;
-            
-            // Save progress
-            localStorage.setItem(`progress_${currentCategory}`, JSON.stringify([...completedAzkar]));
-        }
-
-        // Create Celebration Effect
-        function createCelebration(element) {
-            const colors = ['#d4a74c', '#27ae60', '#1a237e', '#f4d03f'];
-            const rect = element.getBoundingClientRect();
-            
-            for (let i = 0; i < 30; i++) {
-                const particle = document.createElement('div');
-                particle.style.position = 'fixed';
-                particle.style.width = '10px';
-                particle.style.height = '10px';
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                particle.style.borderRadius = '50%';
-                particle.style.left = rect.left + rect.width / 2 + 'px';
-                particle.style.top = rect.top + rect.height / 2 + 'px';
-                particle.style.pointerEvents = 'none';
-                particle.style.zIndex = '9999';
-                
-                document.body.appendChild(particle);
-                
-                const angle = (Math.PI * 2 * i) / 30;
-                const velocity = 100 + Math.random() * 100;
-                const tx = Math.cos(angle) * velocity;
-                const ty = Math.sin(angle) * velocity;
-                
-                particle.animate([
-                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
-                ], {
-                    duration: 1000,
-                    easing: 'cubic-bezier(0, .9, .57, 1)'
-                }).onfinish = () => particle.remove();
-            }
-        }
-
-        // Retry loading
-        function retryLoading() {
-            document.getElementById('azkarContainer').innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-circle-notch"></i>
-                    <p>جاري إعادة المحاولة...</p>
-                </div>
-            `;
-            fetchAzkarData();
-        }
-    </script>
+/* ══ HELPERS ══ */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function toggleTheme(){
+  if(typeof AppTheme!=='undefined') AppTheme.toggle();
+  else{
+    document.body.classList.toggle('light');
+    localStorage.setItem('appTheme', document.body.classList.contains('light')?'light':'dark');
+  }
+}
+</script>
 </body>
 </html>
