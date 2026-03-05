@@ -713,14 +713,22 @@ window.saveNotifSettings = function(){
   showToast('✅ تم حفظ مواعيد التذكير');
 };
 
+function openNotifModal(){
+  const m = document.getElementById('notifModal');
+  if(m) m.classList.add('show');
+}
+function closeNotifModal(){
+  const m = document.getElementById('notifModal');
+  if(m) m.classList.remove('show');
+}
+
 /* ══ HELPERS ══ */
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
 }
-function toggleTheme(){ AppTheme.toggle(); }
-}
+function toggleTheme(){ if(typeof AppTheme!=='undefined') AppTheme.toggle(); else{ document.body.classList.toggle('light'); localStorage.setItem('appTheme',document.body.classList.contains('light')?'light':'dark'); } }
 </script>
 
 <script type="module">
