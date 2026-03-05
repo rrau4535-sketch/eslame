@@ -1,0 +1,31 @@
+name: Adhkar Notifications
+on:
+  schedule:
+    - cron: '30 3 * * *'
+    - cron: '30 11 * * *'
+    - cron: '30 14 * * *'
+    - cron: '30 16 * * *'
+    - cron: '0 4 * * *'
+    - cron: '0 20 * * *'
+  workflow_dispatch:
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send FCM Notification
+        env:
+          KEY: ${{ secrets.FCM_SERVER_KEY }}
+        run: |
+          H=$(date -u +%H)
+          if   [ "$H" = "03" ]; then T="🌙 أذكار بعد الفجر";  B="حان وقت أذكار الفجر";   C="fajr"
+          elif [ "$H" = "11" ]; then T="☀️ أذكار بعد الظهر";  B="حان وقت أذكار الظهر";   C="dhuhr"
+          elif [ "$H" = "14" ]; then T="🌤️ أذكار بعد العصر";  B="حان وقت أذكار العصر";   C="asr"
+          elif [ "$H" = "16" ]; then T="🌇 أذكار بعد المغرب"; B="حان وقت أذكار المغرب";  C="maghrib"
+          elif [ "$H" = "04" ]; then T="🌅 أذكار الصباح";     B="لا تنس أذكار الصباح";   C="morning"
+          else                        T="🌙 أذكار النوم";      B="اذكر الله قبل النوم";   C="sleep"; fi
+          curl -s -X POST \
+            -H "Authorization: key=$KEY" \
+            -H "Content-Type: application/json" \
+            -d '{"to":"/topics/adhkar","notification":{"title":"'"$T"'","body":"'"$B"'","icon":"https://rrau4535-sketch.github.io/eslame/icons/icon-192.png"},"data":{"cat":"'"$C"'"}}' \
+            https://fcm.googleapis.com/fcm/send
+          echo "✅ Sent: $T"

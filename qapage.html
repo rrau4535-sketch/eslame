@@ -2,13 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>الأسئلة الدينية</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0c1a12">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swa&display=swapp" rel="stylesheet">
 <style>
 :root{
   --bg:#080f0a;--surf:#111d14;--surf2:#172218;--surf3:#1e2e20;
@@ -195,7 +195,11 @@ body.light .q-foot{background:rgba(0,0,0,.03);}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:2px;}
 ::selection{background:rgba(196,160,60,.25);}
+
+*:focus{outline:none!important;}
+*:focus-visible{outline:none!important;}
 </style>
+<script src="app-init.js"></script>
 </head>
 <body>
 
@@ -575,10 +579,7 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('show'),3200);
 }
 
-window.toggleTheme = function(){
-  document.body.classList.toggle('light');
-  localStorage.setItem('qTheme', document.body.classList.contains('light')?'light':'dark');
-};
+window.toggleTheme = function(){ AppTheme.toggle(); };;
 
 window.addEventListener('scroll',()=>{
   document.getElementById('header').classList.toggle('sc',scrollY>10);

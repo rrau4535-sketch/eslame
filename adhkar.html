@@ -2,9 +2,11 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>الأذكار | الموسوعة الإسلامية</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swa&display=swapp" rel="stylesheet">
 <script src="app-init.js"></script>
 <style>
 :root{
@@ -230,8 +232,8 @@ body.light .header.sc{background:rgba(240,232,213,.93);}
 <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
   <div class="modal-box" style="position:relative;">
     <button class="modal-close" onclick="closeNotifModal()">✕</button>
-    <div class="modal-title">🔔 إعدادات التذكير</div>
-    <div class="modal-sub">حدد وقت تذكيرك لكل نوع من الأذكار</div>
+    <div class="modal-title">⏰ مواعيد تذكير الأذكار</div>
+    <div class="modal-sub">حدد الوقت المناسب لكل تذكير — ستصلك إشعارات يومية 🔔</div>
 
     <div class="modal-divider"></div>
 
@@ -251,10 +253,38 @@ body.light .header.sc{background:rgba(240,232,213,.93);}
     </div>
     <div class="time-row">
       <div class="time-row-info">
-        <div class="time-row-label">🕌 أذكار بعد الصلاة</div>
-        <div class="time-row-sub">تذكير بعد كل صلاة</div>
+        <div class="time-row-label">🌙 بعد الفجر</div>
+        <div class="time-row-sub">تذكير بعد صلاة الفجر</div>
       </div>
-      <input type="time" class="time-input" id="t-prayer" value="13:00">
+      <input type="time" class="time-input" id="t-fajr" value="05:30">
+    </div>
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">☀️ بعد الظهر</div>
+        <div class="time-row-sub">تذكير بعد صلاة الظهر</div>
+      </div>
+      <input type="time" class="time-input" id="t-dhuhr" value="13:30">
+    </div>
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">🌤️ بعد العصر</div>
+        <div class="time-row-sub">تذكير بعد صلاة العصر</div>
+      </div>
+      <input type="time" class="time-input" id="t-asr" value="16:30">
+    </div>
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">🌇 بعد المغرب</div>
+        <div class="time-row-sub">تذكير بعد صلاة المغرب</div>
+      </div>
+      <input type="time" class="time-input" id="t-maghrib" value="18:30">
+    </div>
+    <div class="time-row">
+      <div class="time-row-info">
+        <div class="time-row-label">🌃 بعد العشاء</div>
+        <div class="time-row-sub">تذكير بعد صلاة العشاء</div>
+      </div>
+      <input type="time" class="time-input" id="t-isha" value="20:30">
     </div>
     <div class="time-row">
       <div class="time-row-info">
@@ -291,11 +321,15 @@ body.light .header.sc{background:rgba(240,232,213,.93);}
 
   <!-- CATEGORIES -->
   <div class="cats" id="cats">
-    <button class="cat-btn active" data-cat="morning"     onclick="selectCat('morning',this)">🌅 الصباح</button>
-    <button class="cat-btn"        data-cat="evening"     onclick="selectCat('evening',this)">🌆 المساء</button>
-    <button class="cat-btn"        data-cat="after_prayer" onclick="selectCat('after_prayer',this)">🕌 بعد الصلاة</button>
-    <button class="cat-btn"        data-cat="sleep"       onclick="selectCat('sleep',this)">🌙 النوم</button>
-    <button class="cat-btn"        data-cat="tasbih"      onclick="selectCat('tasbih',this)">📿 تسابيح</button>
+    <button class="cat-btn active" data-cat="morning"      onclick="selectCat('morning',this)">🌅 الصباح</button>
+    <button class="cat-btn"        data-cat="evening"      onclick="selectCat('evening',this)">🌆 المساء</button>
+    <button class="cat-btn"        data-cat="fajr"         onclick="selectCat('fajr',this)">🌙 بعد الفجر</button>
+    <button class="cat-btn"        data-cat="dhuhr"        onclick="selectCat('dhuhr',this)">☀️ بعد الظهر</button>
+    <button class="cat-btn"        data-cat="asr"          onclick="selectCat('asr',this)">🌤️ بعد العصر</button>
+    <button class="cat-btn"        data-cat="maghrib"      onclick="selectCat('maghrib',this)">🌇 بعد المغرب</button>
+    <button class="cat-btn"        data-cat="isha"         onclick="selectCat('isha',this)">🌃 بعد العشاء</button>
+    <button class="cat-btn"        data-cat="sleep"        onclick="selectCat('sleep',this)">🌙 النوم</button>
+    <button class="cat-btn"        data-cat="tasbih"       onclick="selectCat('tasbih',this)">📿 تسابيح</button>
   </div>
 
   <!-- NOTIF CARD -->
@@ -344,14 +378,58 @@ const AZKAR = {
     {text:"بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ",count:3,ref:"أبو داود",desc:"الوقاية"},
     {text:"رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ نَبِيًّا",count:3,ref:"أحمد",desc:"الرضا"},
   ],
-  after_prayer:[
+  fajr:[
     {text:"أَسْتَغْفِرُ اللَّهَ",count:3,ref:"مسلم",desc:"بعد السلام"},
     {text:"اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",count:1,ref:"مسلم",desc:"التسليم"},
     {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ذكر بعد الصلاة"},
     {text:"سُبْحَانَ اللَّهِ",count:33,ref:"مسلم",desc:"التسبيح"},
     {text:"الْحَمْدُ لِلَّهِ",count:33,ref:"مسلم",desc:"التحميد"},
     {text:"اللَّهُ أَكْبَرُ",count:33,ref:"مسلم",desc:"التكبير"},
-    {text:"لَا إِلَهَ إِلَّا اللَّهُ",count:1,ref:"مسلم",desc:"التهليل"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ختام التسبيح"},
+    {text:"اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ",count:7,ref:"أبو داود",desc:"خاص بالفجر والمغرب"},
+    {text:"اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا",count:1,ref:"ابن ماجه",desc:"دعاء الفجر"},
+  ],
+  dhuhr:[
+    {text:"أَسْتَغْفِرُ اللَّهَ",count:3,ref:"مسلم",desc:"بعد السلام"},
+    {text:"اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",count:1,ref:"مسلم",desc:"التسليم"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ذكر بعد الصلاة"},
+    {text:"سُبْحَانَ اللَّهِ",count:33,ref:"مسلم",desc:"التسبيح"},
+    {text:"الْحَمْدُ لِلَّهِ",count:33,ref:"مسلم",desc:"التحميد"},
+    {text:"اللَّهُ أَكْبَرُ",count:33,ref:"مسلم",desc:"التكبير"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ختام التسبيح"},
+    {text:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ",count:10,ref:"البخاري",desc:"الصلاة على النبي"},
+  ],
+  asr:[
+    {text:"أَسْتَغْفِرُ اللَّهَ",count:3,ref:"مسلم",desc:"بعد السلام"},
+    {text:"اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",count:1,ref:"مسلم",desc:"التسليم"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ذكر بعد الصلاة"},
+    {text:"سُبْحَانَ اللَّهِ",count:33,ref:"مسلم",desc:"التسبيح"},
+    {text:"الْحَمْدُ لِلَّهِ",count:33,ref:"مسلم",desc:"التحميد"},
+    {text:"اللَّهُ أَكْبَرُ",count:33,ref:"مسلم",desc:"التكبير"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ختام التسبيح"},
+    {text:"سُبْحَانَ اللَّهِ وَبِحَمْدِهِ عَدَدَ خَلْقِهِ وَرِضَا نَفْسِهِ وَزِنَةَ عَرْشِهِ وَمِدَادَ كَلِمَاتِهِ",count:3,ref:"مسلم",desc:"تسبيح العصر"},
+  ],
+  maghrib:[
+    {text:"أَسْتَغْفِرُ اللَّهَ",count:3,ref:"مسلم",desc:"بعد السلام"},
+    {text:"اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",count:1,ref:"مسلم",desc:"التسليم"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ذكر بعد الصلاة"},
+    {text:"سُبْحَانَ اللَّهِ",count:33,ref:"مسلم",desc:"التسبيح"},
+    {text:"الْحَمْدُ لِلَّهِ",count:33,ref:"مسلم",desc:"التحميد"},
+    {text:"اللَّهُ أَكْبَرُ",count:33,ref:"مسلم",desc:"التكبير"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ختام التسبيح"},
+    {text:"اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ",count:7,ref:"أبو داود",desc:"خاص بالفجر والمغرب"},
+    {text:"اللَّهُمَّ إِنِّي أَسْأَلُكَ الْجَنَّةَ",count:3,ref:"أبو داود",desc:"دعاء المغرب"},
+  ],
+  isha:[
+    {text:"أَسْتَغْفِرُ اللَّهَ",count:3,ref:"مسلم",desc:"بعد السلام"},
+    {text:"اللَّهُمَّ أَنْتَ السَّلَامُ، وَمِنْكَ السَّلَامُ، تَبَارَكْتَ يَا ذَا الْجَلَالِ وَالْإِكْرَامِ",count:1,ref:"مسلم",desc:"التسليم"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ذكر بعد الصلاة"},
+    {text:"سُبْحَانَ اللَّهِ",count:33,ref:"مسلم",desc:"التسبيح"},
+    {text:"الْحَمْدُ لِلَّهِ",count:33,ref:"مسلم",desc:"التحميد"},
+    {text:"اللَّهُ أَكْبَرُ",count:33,ref:"مسلم",desc:"التكبير"},
+    {text:"لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ",count:1,ref:"البخاري",desc:"ختام التسبيح"},
+    {text:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ",count:10,ref:"البخاري",desc:"الصلاة على النبي"},
+    {text:"اللَّهُمَّ اغْفِرْ لِي ذَنْبِي كُلَّهُ، دِقَّهُ وَجِلَّهُ، وَأَوَّلَهُ وَآخِرَهُ، وَعَلَانِيَتَهُ وَسِرَّهُ",count:1,ref:"مسلم",desc:"دعاء العشاء"},
   ],
   sleep:[
     {text:"بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",count:1,ref:"البخاري",desc:"قبل النوم"},
@@ -372,26 +450,69 @@ const AZKAR = {
 
 const CAT_NAMES = {
   morning:'أذكار الصباح', evening:'أذكار المساء',
-  after_prayer:'أذكار بعد الصلاة', sleep:'أذكار النوم', tasbih:'تسابيح'
+  fajr:'أذكار بعد الفجر', dhuhr:'أذكار بعد الظهر',
+  asr:'أذكار بعد العصر', maghrib:'أذكار بعد المغرب',
+  isha:'أذكار بعد العشاء', sleep:'أذكار النوم', tasbih:'تسابيح'
 };
 
-const DEFAULT_TIMES = {morning:'06:00', evening:'16:00', after_prayer:'13:00', sleep:'22:00'};
+const DEFAULT_TIMES = {morning:'06:00', evening:'16:00', fajr:'05:30', dhuhr:'13:30', asr:'16:30', maghrib:'18:30', isha:'20:30', sleep:'22:00'};
 
 let currentCat = 'morning';
 let completed = new Set();
 let notifEnabled = JSON.parse(localStorage.getItem('adhkarNotif') || 'false');
 let notifTimes = JSON.parse(localStorage.getItem('adhkarTimes') || JSON.stringify(DEFAULT_TIMES));
-let scheduledTimers = {};
+
 
 /* ══ INIT ══ */
 window.addEventListener('DOMContentLoaded', ()=>{
-  loadCat('morning');
+  // افحص لو في أذكار صلاة محددة لازم تفتح
+  const autoRaw = localStorage.getItem('adhkarAutoOpen');
+  let startCat = 'morning';
+  if(autoRaw){
+    try{
+      const auto = JSON.parse(autoRaw);
+      // لو الإشعار جديد (خلال آخر 30 دقيقة)
+      if(auto.cat && auto.time && (Date.now()-auto.time < 30*60*1000)){
+        startCat = auto.cat;
+        localStorage.removeItem('adhkarAutoOpen');
+        // اعرض toast
+        const names={fajr:'الفجر',dhuhr:'الظهر',asr:'العصر',maghrib:'المغرب',isha:'العشاء'};
+        setTimeout(()=>showToast('🤲 أذكار بعد صلاة '+(names[auto.cat]||'')), 600);
+      }
+    }catch(e){
+      // قديم النمط (string مش object)
+      if(['fajr','dhuhr','asr','maghrib','isha'].includes(autoRaw)){
+        startCat = autoRaw;
+        localStorage.removeItem('adhkarAutoOpen');
+      }
+    }
+  }
+  // افحص الـ hash في الـ URL
+  const hash = location.hash.replace('#','');
+  if(['morning','evening','fajr','dhuhr','asr','maghrib','isha','sleep','tasbih'].includes(hash)){
+    startCat = hash;
+  }
+
+  // فعّل الـ button الصح
+  document.querySelectorAll('.cat-btn').forEach(b=>{
+    if(b.dataset.cat === startCat){
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+
+  loadCat(startCat);
   updateNotifUI();
   scheduleAll();
   document.getElementById('t-morning').value = notifTimes.morning || '06:00';
   document.getElementById('t-evening').value = notifTimes.evening || '16:00';
-  document.getElementById('t-prayer').value  = notifTimes.after_prayer || '13:00';
-  document.getElementById('t-sleep').value   = notifTimes.sleep || '22:00';
+  document.getElementById('t-fajr').value    = notifTimes.fajr    || '05:30';
+  document.getElementById('t-dhuhr').value   = notifTimes.dhuhr   || '13:30';
+  document.getElementById('t-asr').value     = notifTimes.asr     || '16:30';
+  document.getElementById('t-maghrib').value = notifTimes.maghrib  || '18:30';
+  document.getElementById('t-isha').value    = notifTimes.isha    || '20:30';
+  document.getElementById('t-sleep').value   = notifTimes.sleep   || '22:00';
 });
 
 window.addEventListener('scroll',()=>{
@@ -555,37 +676,8 @@ function updateNotifUI(){
 }
 
 function scheduleAll(){
-  Object.values(scheduledTimers).forEach(clearTimeout);
-  scheduledTimers = {};
-  if(!notifEnabled || Notification?.permission !== 'granted') return;
-
-  const schedule = [
-    {key:'morning',    label:'🌅 أذكار الصباح',     time: notifTimes.morning},
-    {key:'evening',    label:'🌆 أذكار المساء',     time: notifTimes.evening},
-    {key:'after_prayer',label:'🕌 أذكار بعد الصلاة', time: notifTimes.after_prayer},
-    {key:'sleep',      label:'🌙 أذكار النوم',      time: notifTimes.sleep},
-  ];
-
-  const now = new Date();
-  schedule.forEach(s=>{
-    if(!s.time) return;
-    const [h,m] = s.time.split(':').map(Number);
-    const target = new Date(now);
-    target.setHours(h,m,0,0);
-    if(target <= now) target.setDate(target.getDate()+1);
-    const diff = target - now;
-    scheduledTimers[s.key] = setTimeout(()=>{
-      new Notification(s.label, {
-        body: 'حان وقت ذكرك — لا تنسَ ذكر الله',
-        icon: 'https://rrau4535-sketch.github.io/eslame/icons/icon-192.png',
-        badge:'https://rrau4535-sketch.github.io/eslame/icons/icon-96.png',
-        tag: s.key,
-        renotify: true,
-      });
-      // جدول تاني يوم
-      setTimeout(()=>scheduleAll(), 1000);
-    }, diff);
-  });
+  /* الإشعارات بتتبعت عن طريق Firebase FCM من GitHub Actions
+     مش محتاجين setTimeout هنا */
 }
 
 /* ══ MODAL ══ */
@@ -600,10 +692,14 @@ window.closeModal = function(e){
 };
 window.saveNotifSettings = function(){
   notifTimes = {
-    morning:      document.getElementById('t-morning').value,
-    evening:      document.getElementById('t-evening').value,
-    after_prayer: document.getElementById('t-prayer').value,
-    sleep:        document.getElementById('t-sleep').value,
+    morning:  document.getElementById('t-morning').value,
+    evening:  document.getElementById('t-evening').value,
+    fajr:     document.getElementById('t-fajr').value,
+    dhuhr:    document.getElementById('t-dhuhr').value,
+    asr:      document.getElementById('t-asr').value,
+    maghrib:  document.getElementById('t-maghrib').value,
+    isha:     document.getElementById('t-isha').value,
+    sleep:    document.getElementById('t-sleep').value,
   };
   localStorage.setItem('adhkarTimes', JSON.stringify(notifTimes));
   
@@ -623,13 +719,86 @@ function showToast(msg){
   t.textContent=msg;t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
 }
-function toggleTheme(){
-  if(typeof AppTheme!=='undefined') AppTheme.toggle();
-  else{
-    document.body.classList.toggle('light');
-    localStorage.setItem('appTheme', document.body.classList.contains('light')?'light':'dark');
-  }
+function toggleTheme(){ AppTheme.toggle(); }
 }
 </script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const VAPID_KEY = 'BArmM-6WzWvh3OwA55fImwv-XmCiLYoH9JyOTJd662yjqAXLhNOGRLJHl8bGohiQva3wdCsiDxZmYzwcTbxgPK4';
+const firebaseConfig = {
+  apiKey:"AIzaSyDd60k9tk6MOtyIbC6VoZbjG8Ny5AFbuo4",
+  authDomain:"eslam-b3994.firebaseapp.com",
+  projectId:"eslam-b3994",
+  storageBucket:"eslam-b3994.firebasestorage.app",
+  messagingSenderId:"251677169117",
+  appId:"1:251677169117:web:b49083ae14519ebd091234"
+};
+
+const app       = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
+const db        = getFirestore(app);
+const auth      = getAuth(app);
+
+/* ══ تسجيل FCM ══ */
+async function registerFCM(){
+  try{
+    const cred  = await signInAnonymously(auth);
+    const uid   = cred.user.uid;
+    const perm  = await Notification.requestPermission();
+    if(perm !== 'granted'){ showToast('⚠️ لم يتم السماح بالإشعارات'); return; }
+
+    const swReg = await navigator.serviceWorker.register('/eslame/firebase-messaging-sw.js');
+    const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+
+    if(token){
+      const times = JSON.parse(localStorage.getItem('adhkarTimes')||'{}');
+      await setDoc(doc(db,'notif_tokens',uid),{
+        token, uid, times,
+        updatedAt: new Date().toISOString()
+      });
+      localStorage.setItem('fcmToken', token);
+      localStorage.setItem('fcmUid',   uid);
+      showToast('✅ تم تفعيل الإشعارات بنجاح!');
+      document.getElementById('notifToggleBtn').classList.add('on');
+      notifEnabled = true;
+      localStorage.setItem('adhkarNotif','true');
+      updateNotifUI();
+    }
+  }catch(e){
+    console.error('FCM error:',e);
+    showToast('⚠️ خطأ: '+e.message);
+  }
+}
+
+/* ══ إشعار في المقدمة ══ */
+onMessage(messaging, payload=>{
+  const t = payload.notification?.title || '🕌 تذكير';
+  const b = payload.notification?.body  || 'حان وقت ذكرك';
+  showToast(t+' — '+b);
+});
+
+/* ══ اربط زرار التفعيل بـ FCM ══ */
+window.toggleNotif = async function(){
+  if(!notifEnabled){
+    await registerFCM();
+  } else {
+    notifEnabled = false;
+    localStorage.setItem('adhkarNotif','false');
+    updateNotifUI();
+    showToast('🔕 تم إيقاف التذكيرات');
+  }
+};
+
+/* ══ لو كان مفعل من قبل، سجل تلقائياً ══ */
+if(localStorage.getItem('adhkarNotif')==='true' && !localStorage.getItem('fcmToken')){
+  setTimeout(registerFCM, 1500);
+}
+</script>
+
 </body>
 </html>

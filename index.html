@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>الموسوعة الإسلامية</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0c1a12">
@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="الموسوعة الإسلامية">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swa&display=swapp" rel="stylesheet">
 
 <style>
 :root {
@@ -36,7 +36,7 @@
 
 /* Professional Focus Outline Removal with Accessibility */
 *, *::before, *::after {
-  outline: none !important;
+  outline:none!important;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -47,14 +47,14 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 [tabindex]:focus-visible {
-  outline: none !important;
+  outline:none!important;
   box-shadow: 0 0 0 3px var(--glow), 0 0 0 1px var(--gold-l) !important;
   border-radius: inherit;
 }
 
 /* Remove default browser outlines */
 :focus {
-  outline: none !important;
+  outline:none!important;
 }
 
 /* Webkit specific */
@@ -64,7 +64,7 @@ textarea:focus-visible,
 
 /* Firefox specific */
 :-moz-focusring {
-  outline: none !important;
+  outline:none!important;
 }
 
 /* For elements that need to show they're focused without outline */
@@ -77,7 +77,7 @@ textarea:focus-visible,
 .qc:focus,
 .sp:focus,
 .fab:focus {
-  outline: none !important;
+  outline:none!important;
   box-shadow: 0 0 0 2px var(--glow) !important;
 }
 
@@ -441,7 +441,11 @@ footer{background:var(--surf);border-top:1px solid var(--bdr);position:relative;
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:3px;}
 ::selection{background:var(--glow);color:var(--gold-l);}
+
+*:focus{outline:none!important;}
+*:focus-visible{outline:none!important;}
 </style>
+<script src="app-init.js"></script>
 </head>
 <body>
 
@@ -456,9 +460,9 @@ footer{background:var(--surf);border-top:1px solid var(--bdr);position:relative;
       <a href="quran.html"  class="nl">القرآن</a>
       <a href="adaya.html"  class="nl">الدعاء</a>
       <a href="adhkar.html" class="nl">الأذكار</a>
-      <a href="cbha.html"   class="nl nl-cta">📿 السبحة</a>
-      <a href="qibla.html"  class="nl nl-cta">🕌 القبلة</a>
-      <a href="qapage.html"  class="nl nl-cta">الاساله </a>
+      <a href="cbha.html"   class="nl ">📿 السبحة</a>
+      <a href="qibla.html"  class="nl ">🕌 القبلة</a>
+      
     </nav>
     <div class="hdr-acts">
       <button class="bti" id="themeBtn" onclick="toggleTheme()">🌓</button>
@@ -472,9 +476,9 @@ footer{background:var(--surf);border-top:1px solid var(--bdr);position:relative;
   <a href="quran.html"  class="nl">📖 القرآن</a>
   <a href="adaya.html"  class="nl">🤲 الدعاء</a>
   <a href="adhkar.html" class="nl">🌿 الأذكار</a>
-  
-  <a href="qibla.html"  class="nl nl-cta">🕌 القبلة والمساجد</a>
- 
+  <a href="cbha.html"   class="nl ">📿  السبحة</a>
+  <a href="qibla.html"  class="nl ">🕌 القبلة والمساجد</a>
+  <a href="prayer.html"  class="nl ">  ☪اوقات الصلاه </a>
 </nav>
 
 <!-- HERO -->
@@ -533,6 +537,8 @@ footer{background:var(--surf);border-top:1px solid var(--bdr);position:relative;
         <a href="ahads.html"  class="fc rev d1"><div class="fi">💡</div><div class="ft">الأحاديث</div><div class="fd">أحاديث صحيحة مع الشرح</div><div class="fa">←</div></a>
         <a href="adaya.html"  class="fc rev d2"><div class="fi">🌙</div><div class="ft">الأدعية</div><div class="fd">أدعية من القرآن والسنة</div><div class="fa">←</div></a>
         <a href="qibla.html"  class="fc rev d1"><div class="fi">🕌</div><div class="ft">القبلة والمساجد</div><div class="fd">بوصلة دقيقة وأقرب مسجد إليك</div><div class="fa">←</div></a>
+        <a href="prayer.html"  class="fc rev d1"><div class="fi">☪</div><div class="ft">اوقات الصلاه☪ </div><div class="fd">بوصلة دقيقة وأقرب مسجد إليك</div><div class="fa">←</div></a>
+
       </div>
     </div>
   </div>
@@ -654,14 +660,7 @@ document.addEventListener('click',e=>{
 });
 
 /* Theme */
-function toggleTheme(){
-  document.body.classList.toggle('light');
-  const l=document.body.classList.contains('light');
-  localStorage.setItem('theme',l?'light':'dark');
-  const ic=l?'🌙':'🌓';
-  document.getElementById('themeBtn').textContent=ic;
-  document.getElementById('themeBtn2').textContent=ic;
-}
+function toggleTheme(){ AppTheme.toggle(); }
 if(localStorage.getItem('theme')==='light'){
   document.body.classList.add('light');
   document.getElementById('themeBtn').textContent='🌙';

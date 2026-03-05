@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>اتجاه القبلة وأقرب مسجد</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0c1a12">
@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swa&display=swapp" rel="stylesheet">
 <style>
 /* ══ TOKENS ══ */
 :root{
@@ -378,7 +378,11 @@ body.light .header.scrolled{background:rgba(240,232,213,.93);}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--gold-d);border-radius:3px;}
 ::selection{background:rgba(196,160,60,.25);}
+
+*:focus{outline:none!important;}
+*:focus-visible{outline:none!important;}
 </style>
+<script src="app-init.js"></script>
 </head>
 <body>
 
@@ -857,10 +861,7 @@ function setStatus(type, msg){
   if(type==='err') dot.classList.add('err');
 }
 
-function toggleTheme(){
-  document.body.classList.toggle('light');
-  localStorage.setItem('qTheme', document.body.classList.contains('light')?'light':'dark');
-}
+function toggleTheme(){ AppTheme.toggle(); }
 
 function showToast(msg){
   const t=document.getElementById('toast');
