@@ -885,7 +885,7 @@ function initDelay(){
 
 /* ══ HELPERS ══ */
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3200); }
-function toggleTheme(){ AppTheme.toggle(); } }
+function toggleTheme(){ if(typeof AppTheme!=="undefined") AppTheme.toggle(); else{ document.body.classList.toggle("light"); localStorage.setItem("appTheme",document.body.classList.contains("light")?"light":"dark"); } }
 </script>
 </body>
 </html>
